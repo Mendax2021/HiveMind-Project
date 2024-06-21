@@ -7,7 +7,8 @@ import { createModel as createVoteModel } from "./Vote.js";
 //leggo il file .env e lo rendo disponibile come variabile d'ambiente
 import "dotenv/config.js";
 
-export const database = new Sequelize(process.env.DB_CONNECTION_URI, {
+export const database = new Sequelize({
+  storage: process.env.DB_CONNECTION_URI,
   dialect: process.env.DIALECT,
 });
 
