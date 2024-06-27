@@ -11,14 +11,19 @@
   "author": "Gianmarco Vellotti",
   "license": "ISC",
   "dependencies": {
-    "cors": "^2.8.5",
     "@sequelize/sqlite3": "^7.0.0-alpha.41",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "express-openapi-validator": "^5.2.0",
+    "js-yaml": "^4.1.0",
+    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.4",
     "sequelize": "^6.37.3",
     "sqlite3": "^5.1.7",
-    "jsonwebtoken": "^9.0.2"
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
+    "yaml": "^2.4.5"
   }
 }

@@ -22,9 +22,8 @@ export class AuthController {
     //ritorna l'utente trovato o null
     return found;
   }
-  /**
-   * Tenta di salvare un nuovo utente nel database
-   */
+
+  //Tenta di salvare un nuovo utente nel database
   static async saveUser(req, res) {
     let user = new User({ userName: req.body.usr, password: req.body.pwd });
     return user.save();

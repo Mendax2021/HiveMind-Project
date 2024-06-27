@@ -1,0 +1,198 @@
+openapi: "3.0.0"
+info:
+  version: "1.0.0"
+  title: HiveMind API
+  description: >
+    `HiveMind` è un social network progettato per favorire la condivisione di idee e opinioni. 
+    Gli utenti possono registrarsi e autenticarsi per pubblicare nuove idee e possono visualizzare 
+    e valutare le idee di altri utenti con upvote esprimendo il loro accordo o disaccordo.
+
+tags:
+  - name: Auth
+    description: Autenticazione e registrazione dell`utente
+  - name: Idea
+    description: Gestione delle idee
+paths:
+  # Doc. dei path \auth
+  /auth/signin:
+    post:
+      tags:
+        - Auth
+      summary: Autenticazione dell`utente
+      description: Autenticazione dell`utente
+      requestBody:
+        description: Credenziali dell`utente da autenticare
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - usr
+                - pwd
+              properties:
+                usr:
+                  type: string
+                  example: Hackerino
+                pwd:
+                  type: string
+                  example: T0P0L1No0
+      responses:
+        200:
+          description: Utente autenticato
+        401:
+          description: Credenziali invalide
+
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: Registrazione dell`utente
+      description: Registrazione dell`utente
+      requestBody:
+        description: Credenziali dell`utente da registrare
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - usr
+                - pwd
+              properties:
+                usr:
+                  type: string
+                  example: Hackerino
+                pwd:
+                  type: string
+                  example: T0P0L1No0
+      responses:
+        200:
+          description: Utente registrato
+        401:
+          description: Credenziali invalide
+
+  # Doc. dei path \Idea
+  /ideas:
+    get:
+      tags:
+        - Idea
+      summary: Recupero di tutte le idee
+      parameters:
+        - name: userId
+          in: query
+          description: Id dell`utente di cui recuperare le idee
+          required: false
+          schema:
+            type: string
+      description: >
+        Recupero di tutte le idee presenti nel sistema. Se gli viene passato un Id
+        di un utente recupera tutte le Idee di quell'utente. Se gli viene passato
+        un Id di un utente nei params recupera tutte le Idee di quell'utente.
+        Quando un utente tenta di recuperare le idee di un altro utente, il sistema
+        rigetta la richiesta.
+      responses:
+        200:
+          description: idee recuperate
+        401:
+          description: idee non recuperate
+
+    post:
+      tags:
+        - Idea
+      summary: Creazione di una nuova idea
+      description: Creazione di una nuova idea
+      requestBody:
+        description: Titolo e descrizione dell`idea da creare
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+              properties:
+                title:
+                  type: string
+                  example: Idea1
+                description:
+                  type: string
+                  example: Descrizione Idea1
+      responses:
+        200:
+          description: Idea creata
+        401:
+          description: Idea non creata
+
+  /ideas/:id:
+    get:
+      tags:
+        - Idea
+      summary: Recupero di una singola idea
+      parameters:
+        - name: id
+          in: path
+          description: Id dell`idea da recuperare
+          required: true
+          schema:
+            type: string
+      description: Recupero di una singola idea
+      responses:
+        200:
+          description: Idea recuperata
+        401:
+          description: Idea non recuperata
+
+    put:
+      tags:
+        - Idea
+      summary: Modifica di una singola idea
+      parameters:
+        - name: id
+          in: path
+          description: Id dell`idea da modificare
+          required: true
+          schema:
+            type: string
+      description: Modifica di una singola idea
+      requestBody:
+        description: Titolo e descrizione dell`idea da modificare
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+              properties:
+                title:
+                  type: string
+                  example: Idea1
+                description:
+                  type: string
+                  example: Descrizione Idea1
+      responses:
+        200:
+          description: Idea modificata
+        401:
+          description: Idea non modificata
+
+    delete:
+      tags:
+        - Idea
+      summary: Eliminazione di una singola idea
+      parameters:
+        - name: id
+          in: path
+          description: Id dell`idea da eliminare
+          required: true
+          schema:
+            type: string
+      description: Eliminazione di una singola idea
+      responses:
+        200:
+          description: Idea eliminata
+        401:
+          description: Idea non eliminata

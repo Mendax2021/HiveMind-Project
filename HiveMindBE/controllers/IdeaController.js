@@ -1,12 +1,13 @@
 import { Idea } from "../models/HiveMindDB.js";
 
 export class IdeaController {
-  static async getIdeasForCurrentUser(req) {
-    return Idea.findAll({
-      where: {
-        user_id: req.userId, //effettuo ricerca tra le idee dell'utente loggato tramite id
-      },
-    });
+  /**
+   * Metodo che restituisce tutte le idee presenti nel database se non
+   * viene passato il parametro userId. Se userId è presente, restituisce
+   * solo le idee dell'utente corrispondente.
+   */
+  static async getAllIdeas(params) {
+    return Idea.findAll(params?.userId ? { where: { user_id: params.userId } } : {});
   }
 
   static async saveIdea(req) {

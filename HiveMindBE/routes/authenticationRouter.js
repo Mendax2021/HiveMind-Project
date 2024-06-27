@@ -3,7 +3,7 @@ import { AuthController } from "../controllers/AuthController.js";
 
 export const authenticationRouter = express.Router();
 
-authenticationRouter.post("/auth", async (req, res) => {
+authenticationRouter.post("/auth/signin", async (req, res) => {
   //oggetto contente username e password
   let userFound = await AuthController.checkCredentials(req, res);
   if (userFound) {
@@ -14,7 +14,7 @@ authenticationRouter.post("/auth", async (req, res) => {
   }
 });
 
-authenticationRouter.post("/signup", (req, res, next) => {
+authenticationRouter.post("/auth/signup", (req, res, next) => {
   AuthController.saveUser(req, res)
     .then((user) => {
       res.json(user);
