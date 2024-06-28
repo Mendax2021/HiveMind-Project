@@ -69,33 +69,34 @@ paths:
       responses:
         200:
           description: Utente registrato
-        401:
-          description: Credenziali invalide
+        409:
+          description: Username già in uso
 
   # Doc. dei path \Idea
   /ideas:
     get:
       tags:
         - Idea
-      summary: Recupero di tutte le idee
+      summary: Recupero di tutte le idee di un utente
       parameters:
         - name: userId
           in: query
           description: Id dell`utente di cui recuperare le idee
-          required: false
+          required: true
           schema:
             type: string
       description: >
-        Recupero di tutte le idee presenti nel sistema. Se gli viene passato un Id
-        di un utente recupera tutte le Idee di quell'utente. Se gli viene passato
-        un Id di un utente nei params recupera tutte le Idee di quell'utente.
+        Recupero di tutte le idee presenti nel sistemadi un dato utente il cui Id è passato
+        nei params.
         Quando un utente tenta di recuperare le idee di un altro utente, il sistema
         rigetta la richiesta.
       responses:
         200:
           description: idee recuperate
         401:
-          description: idee non recuperate
+          description: Utente non autorizzato
+        403:
+          description: Utente non autorizzato a visualizzare le idee di un altro utente
 
     post:
       tags:
@@ -115,17 +116,17 @@ paths:
               properties:
                 title:
                   type: string
-                  example: Idea1
+                  example: IdeaTitle
                 description:
                   type: string
-                  example: Descrizione Idea1
+                  example: IdeaDescription
       responses:
         200:
           description: Idea creata
         401:
           description: Idea non creata
 
-  /ideas/:id:
+  /ideas/{id}:
     get:
       tags:
         - Idea

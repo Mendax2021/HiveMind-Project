@@ -25,7 +25,7 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(apiSpec));
 //middleware per la validazione delle richieste
 app.use(
   OpenApiValidator.middleware({
-    apiSpec: "../spec.yaml",
+    apiSpec: "spec.yaml",
     validateRequests: true,
     validateResponses: false,
   })
@@ -37,7 +37,7 @@ app.use(enforceAuthentication);
 app.use(ideaRouter);
 
 app.use((err, req, res, next) => {
-  console.log(err.stack);
+  console.log(err.stack); //se non è presente stack, stamperà undefined
   res.status(err.status || 500).json({
     code: err.status || 500,
     description: err.message || "An error occurred",

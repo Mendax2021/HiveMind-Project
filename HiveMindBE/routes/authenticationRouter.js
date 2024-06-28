@@ -3,23 +3,25 @@ import { AuthController } from "../controllers/AuthController.js";
 
 export const authenticationRouter = express.Router();
 
-authenticationRouter.post("/auth/signin", async (req, res) => {
+authenticationRouter.post("/auth/signin", (req, res, next) => {
   //oggetto contente username e password
-  let userFound = await AuthController.checkCredentials(req, res);
-  if (userFound) {
-    res.json(AuthController.issueToken(userFound));
-  } else {
-    res.status(401);
-    res.json({ message: "Credenziali invalide, riprova" });
-  }
+  AuthController.checkCredentials(req.body)
+    .then((userFound) => {
+      if (userFound) {
+        res.json(AuthController.issueToken(userFound));
+      }
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 authenticationRouter.post("/auth/signup", (req, res, next) => {
-  AuthController.saveUser(req, res)
+  AuthController.saveUser(req.body)
     .then((user) => {
       res.json(user);
     })
     .catch((err) => {
-      next({ status: 500, messsage: "Impossibile salvare l`utente" });
+      next(err);
     });
 });

@@ -6,11 +6,8 @@ export class AuthController {
    * Gestisce le richieste post al path /auth.
    * Controlla le credenziali dell'utente
    */
-  static async checkCredentials(req, res) {
-    let user = new User({
-      userName: req.body.usr,
-      password: req.body.pwd,
-    });
+  static async checkCredentials(userData) {
+    let user = new User({ userName: userData.usr, password: userData.pwd });
 
     let found = await User.findOne({
       where: {
@@ -18,22 +15,30 @@ export class AuthController {
         password: user.password,
       },
     });
-
+    if (!found) {
+      throw { status: 401, message: "Credenziali invalide, riprova" };
+    }
     //ritorna l'utente trovato o null
     return found;
   }
 
   //Tenta di salvare un nuovo utente nel database
-  static async saveUser(req, res) {
-    let user = new User({ userName: req.body.usr, password: req.body.pwd });
-    return user.save();
+  static async saveUser(userData) {
+    let userToAdd = new User({ userName: userData.usr, password: userData.pwd });
+    let found = await User.findOne({ where: { userName: userToAdd.userName } });
+    if (found) {
+      throw { status: 409, message: "Username già in uso" };
+    }
+    return userToAdd.save();
   }
 
   static issueToken(user) {
     // genera un token JWT con l'id e il nome utente
-    return Jwt.sign({ user: { id: user.id, username: user.userName } }, process.env.TOKEN_SECRET, {
+    const createdToken = Jwt.sign({ user: { id: user.id, username: user.userName } }, process.env.TOKEN_SECRET, {
       expiresIn: `${24 * 60 * 60}s`,
     });
+
+    return { token: createdToken };
   }
 
   static isTokenValid(token, callback) {
