@@ -12,8 +12,13 @@ tags:
     description: Autenticazione e registrazione dell`utente
   - name: Idea
     description: Gestione delle idee
+  - name: Vote
+    description: Gestione dei voti
+  - name: Comment
+    description: Gestione dei commenti
+
 paths:
-  # Doc. dei path \auth
+  # Doc. dei path /auth
   /auth/signin:
     post:
       tags:
@@ -72,7 +77,7 @@ paths:
         409:
           description: Username già in uso
 
-  # Doc. dei path \Idea
+  # Doc. dei path /Idea
   /ideas:
     get:
       tags:
@@ -116,23 +121,43 @@ paths:
               properties:
                 title:
                   type: string
-                  example: IdeaTitle
+                  example: Titolo dell`idea
                 description:
                   type: string
-                  example: IdeaDescription
+                  example: Descrizione dell`idea
       responses:
         200:
           description: Idea creata
         401:
           description: Idea non creata
 
-  /ideas/{id}:
+  /ideas/search:
+    get:
+      tags:
+        - Idea
+      summary: Recupero delle idee presenti nel sistema a seconda della tipologia
+      parameters:
+        - name: type
+          in: query
+          description: Tipologia di idee da prelevare, che sia mainstream, unpopular o  controversial
+          required: true
+          schema:
+            type: string
+      description: >
+        Recupero delle idee presenti nel sistema a seconda della tipologia
+      responses:
+        200:
+          description: idee recuperate
+        401:
+          description: Utente non autorizzato
+
+  /ideas/{ideaId}:
     get:
       tags:
         - Idea
       summary: Recupero di una singola idea
       parameters:
-        - name: id
+        - name: ideaId
           in: path
           description: Id dell`idea da recuperare
           required: true
@@ -148,15 +173,15 @@ paths:
     put:
       tags:
         - Idea
-      summary: Modifica di una singola idea
+      summary: Modifica di una propria idea
       parameters:
-        - name: id
+        - name: ideaId
           in: path
           description: Id dell`idea da modificare
           required: true
           schema:
             type: string
-      description: Modifica di una singola idea
+      description: Modifica di un` idea
       requestBody:
         description: Titolo e descrizione dell`idea da modificare
         required: true
@@ -170,10 +195,10 @@ paths:
               properties:
                 title:
                   type: string
-                  example: Idea1
+                  example: Titolo dell`idea
                 description:
                   type: string
-                  example: Descrizione Idea1
+                  example: Descrizione dell`idea
       responses:
         200:
           description: Idea modificata
@@ -185,7 +210,7 @@ paths:
         - Idea
       summary: Eliminazione di una singola idea
       parameters:
-        - name: id
+        - name: ideaId
           in: path
           description: Id dell`idea da eliminare
           required: true
@@ -197,3 +222,113 @@ paths:
           description: Idea eliminata
         401:
           description: Idea non eliminata
+
+  # Doc. dei path /votes
+  /ideas/{ideaId}/votes:
+    get:
+      tags:
+        - Vote
+      summary: Recupero di tutti i voti di un`idea
+      parameters:
+        - name: ideaId
+          in: query
+          description: Id dell`idea di cui recuperare i voti
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Tipo di voto da recuperare
+          required: false
+          schema:
+            type: string
+      description: >
+        Recupero del numero di tutti i voti presenti nel sistema di una data idea il cui Id è passato
+        nei params. In base al tipo di voto passato nei params, il sistema restituisce il numero di voti positivi
+        o negativi o totali.
+      responses:
+        200:
+          description: voti recuperati
+        401:
+          description: Utente non autorizzato
+
+    post:
+      tags:
+        - Vote
+      summary: Creazione di un nuovo voto
+      parameters:
+        - name: ideaId
+          in: path
+          description: Id dell`idea a cui aggiungere un voto
+          required: true
+          schema:
+            type: string
+      description: Creazione di un nuovo voto
+      requestBody:
+        description: tipologia di voto da creare
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+              properties:
+                type:
+                  type: number
+                  example: 1
+      responses:
+        200:
+          description: Voto creato
+        401:
+          description: Voto non creato
+
+  /votes/{voteId}:
+    delete:
+      tags:
+        - Vote
+      summary: Eliminazione di un proprio voto
+      parameters:
+        - name: voteId
+          in: path
+          description: Id del voto da eliminare
+          required: true
+          schema:
+            type: string
+      description: Eliminazione di un singolo voto
+      responses:
+        200:
+          description: Voto eliminato
+        401:
+          description: Voto non eliminato
+
+    put:
+      tags:
+        - Vote
+      summary: Modifica di un proprio voto
+      parameters:
+        - name: voteId
+          in: path
+          description: Id del voto da modificare
+          required: true
+          schema:
+            type: string
+      description: Modifica di un voto
+      requestBody:
+        description: valore del voto aggiornato
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+              properties:
+                type:
+                  type: number
+                  example: 1
+      responses:
+        200:
+          description: Voto modificato
+        401:
+          description: Voto non modificato

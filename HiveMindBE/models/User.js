@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { createHash } from "crypto";
+import { on } from "events";
 
 export function createModel(database) {
   database.define("User", {

@@ -9,6 +9,7 @@ export const ideaRouter = express.Router();
  * in base al query param required passato.
  * Se un utente prova a vedere le idee di un altro utente, la richiesta viene rifiutata.
  */
+//TODO: Forse da cancellare se non la utilizzo, al suo posto si userà la search (anche per fare questa cosa)
 ideaRouter.get("/ideas", (req, res, next) => {
   //se l'utente è loggato, può vedere solo le proprie idee
   if (req.query?.userId && req.userId == req.query?.userId) {
@@ -24,11 +25,7 @@ ideaRouter.get("/ideas", (req, res, next) => {
   }
 });
 
-/**
- *
- */
-
-ideaRouter.get("/Ideas/search", (req, res, next) => {
+ideaRouter.get("/ideas/search", (req, res, next) => {
   IdeaController.getIdeasBySearch(req.query)
     .then((ideas) => {
       res.json(ideas);
@@ -39,7 +36,7 @@ ideaRouter.get("/Ideas/search", (req, res, next) => {
 });
 
 ideaRouter.post("/ideas", (req, res, next) => {
-  IdeaController.saveIdea(req)
+  IdeaController.saveIdea(req.userId, req.body)
     .then((result) => {
       res.json(result);
     })
@@ -48,8 +45,9 @@ ideaRouter.post("/ideas", (req, res, next) => {
     });
 });
 
-ideaRouter.get("/ideas/:id", ensureUsersModifyOnlyOwnIdeas, (req, res, next) => {
-  IdeaController.findById(req)
+ideaRouter.get("/ideas/:ideaId", ensureUsersModifyOnlyOwnIdeas, (req, res, next) => {
+  console.log("userId", req.params.userId);
+  IdeaController.findById(req.params.ideaId)
     .then((item) => {
       if (item) res.json(item);
       else next({ status: 404, message: "Idea not found" });
@@ -59,8 +57,8 @@ ideaRouter.get("/ideas/:id", ensureUsersModifyOnlyOwnIdeas, (req, res, next) => 
     });
 });
 
-ideaRouter.delete("/ideas/:id", ensureUsersModifyOnlyOwnIdeas, (req, res, next) => {
-  IdeaController.delete(req)
+ideaRouter.delete("/ideas/:ideaId", ensureUsersModifyOnlyOwnIdeas, (req, res, next) => {
+  IdeaController.delete(req.params.ideaId)
     .then((item) => {
       if (item) res.json(item);
       else next({ status: 404, message: "Idea not found" });
@@ -70,8 +68,8 @@ ideaRouter.delete("/ideas/:id", ensureUsersModifyOnlyOwnIdeas, (req, res, next) 
     });
 });
 
-ideaRouter.put("/ideas/:id", ensureUsersModifyOnlyOwnIdeas, (req, res, next) => {
-  IdeaController.update(req.params.id, req.body)
+ideaRouter.put("/ideas/:ideaId", ensureUsersModifyOnlyOwnIdeas, (req, res, next) => {
+  IdeaController.update(req.params.ideaId, req.body)
     .then((item) => {
       if (item) res.json(item);
       else next({ status: 404, message: "Idea not found" });

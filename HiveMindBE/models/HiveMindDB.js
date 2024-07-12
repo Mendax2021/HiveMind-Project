@@ -22,47 +22,47 @@ export const { User, Idea, Comment, Vote } = database.models;
 //configuro le associazioni:
 //Utente 1 - N Idea
 User.Ideas = User.hasMany(Idea, {
-  foreignKey: "user_id",
+  foreignKey: { name: "user_id", allowNull: false },
 });
 
 Idea.User = Idea.belongsTo(User, {
-  foreignKey: "user_id",
+  foreignKey: { name: "user_id", allowNull: false },
 });
 
 //Utente 1 - N Commento
 User.Comments = User.hasMany(Comment, {
-  foreignKey: "user_id",
+  foreignKey: { name: "user_id", allowNull: false },
 });
 
 Comment.User = Comment.belongsTo(User, {
-  foreignKey: "user_id",
+  foreignKey: { name: "user_id", allowNull: false },
 });
 
 //Utente 1 - N Voto
 User.Votes = User.hasMany(Vote, {
-  foreignKey: "user_id",
+  foreignKey: { name: "user_id", allowNull: false },
 });
 
 Vote.User = Vote.belongsTo(User, {
-  foreignKey: "user_id",
+  foreignKey: { name: "user_id", allowNull: false },
 });
 
 //Idea 1 - N Commento
 Idea.Comments = Idea.hasMany(Comment, {
-  foreignKey: "idea_id",
+  foreignKey: { name: "idea_id", allowNull: false },
 });
 
 Comment.Idea = Comment.belongsTo(Idea, {
-  foreignKey: "idea_id",
+  foreignKey: { name: "idea_id", allowNull: false },
 });
 
 //Idea 1 - N Voto
 Idea.Votes = Idea.hasMany(Vote, {
-  foreignKey: "idea_id",
+  foreignKey: { name: "idea_id", allowNull: false },
 });
 
 Vote.Idea = Vote.belongsTo(Idea, {
-  foreignKey: "idea_id",
+  foreignKey: { name: "idea_id", allowNull: false },
 });
 
 //sincronizzazione dello scehma del database
@@ -72,5 +72,5 @@ database
     console.log("Database sincronizzato");
   })
   .catch((err) => {
-    console.err("Errore nella sincronizzazione: " + err.message);
+    console.log("Errore nella sincronizzazione: " + err.message);
   });

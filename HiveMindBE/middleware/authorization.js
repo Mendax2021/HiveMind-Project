@@ -29,7 +29,7 @@ export function enforceAuthentication(req, res, next) {
 
 export async function ensureUsersModifyOnlyOwnIdeas(req, res, next) {
   const userId = req.userId;
-  const ideaId = req.params.id;
+  const ideaId = req.params.ideaId;
   const userHasPermission = await AuthController.canUserModifyIdea(userId, ideaId);
   if (userHasPermission) {
     next();
@@ -43,7 +43,7 @@ export async function ensureUsersModifyOnlyOwnIdeas(req, res, next) {
 
 export async function ensureUsersModifyOnlyOwnVotes(req, res, next) {
   const userId = req.userId;
-  const voteId = req.params.id;
+  const voteId = req.params.voteId;
   const userHasPermission = await AuthController.canUserModifyVote(userId, voteId);
   if (userHasPermission) {
     next();

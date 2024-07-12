@@ -9,6 +9,8 @@ import * as OpenApiValidator from "express-openapi-validator";
 import { authenticationRouter } from "./routes/authenticationRouter.js";
 import { enforceAuthentication } from "./middleware/authorization.js";
 import { ideaRouter } from "./routes/ideaRouter.js";
+import { voteRouter } from "./routes/voteRouter.js";
+import { checkNonEmptyBodyFields } from "./middleware/checkNonEmptyBodyFields.js";
 
 const app = express();
 const PORT = 3000;
@@ -34,7 +36,9 @@ app.use(
 // Routes
 app.use(authenticationRouter);
 app.use(enforceAuthentication);
+app.use(checkNonEmptyBodyFields);
 app.use(ideaRouter);
+app.use(voteRouter);
 
 app.use((err, req, res, next) => {
   console.log(err.stack); //se non è presente stack, stamperà undefined
