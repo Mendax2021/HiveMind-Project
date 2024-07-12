@@ -52,8 +52,7 @@ export class VoteController {
       });
     });
   }
-  //mi restituisce la lista di voti in base alla loro tipologia settata nel query param ed il numero di voti
-  //TODO: al momento è una normale getAll. Implementare la ricerca per una DATA IDEA A SECONDA DI CIÒ CHE DICE IL PROFESSORE
+
   static async getAllVotes(ideaId, type) {
     const voteType = type === "upvote" ? 1 : type === "downvote" ? -1 : null;
     const allVotes = await Vote.findAll(voteType ? { where: { vote_type: voteType, idea_id: ideaId } } : {});

@@ -66,7 +66,7 @@ export class IdeaController {
          * soglia del 10% di controversia tra upvotes e downvotes così da esser
          * proporzionato in base al numero di voti totali
          */
-        const controversyThreshold = 0.1;
+        const controversyThreshold = 0.2;
         //Il valore assoluto tra upvotes e downvotes diviso per il numero totale di voti deve essere minore o uguale alla soglia
         having = Sequelize.and(
           Sequelize.where(Sequelize.literal("ABS(upvotes - downvotes) / totalVotes"), {
@@ -91,8 +91,18 @@ export class IdeaController {
         [Sequelize.literal(`SUM(CASE WHEN Votes.vote_type = -1 THEN 1 ELSE 0 END)`), "downvotes"],
         [Sequelize.literal(`COUNT(Votes.id)`), "totalVotes"],
       ],
-      include: [{ model: Comment }, { model: User, attributes: ["userName", "id"] }, { model: Vote, attributes: [] }],
-      group: ["Idea.id"],
+      include: [
+        {
+          model: Comment,
+          include: {
+            model: User,
+            attributes: ["userName"],
+          },
+        },
+        { model: User, attributes: ["userName", "id"] },
+        { model: Vote, attributes: [] },
+      ],
+      group: ["Idea.id", "Comments.id", "Comments.User.id", "User.id"],
       where: { creation_date: { [Op.gte]: oneWeekAgo } },
       having, // filtro per la controversia
       order,

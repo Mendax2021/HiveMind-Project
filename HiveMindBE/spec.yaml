@@ -231,7 +231,7 @@ paths:
       summary: Recupero di tutti i voti di un`idea
       parameters:
         - name: ideaId
-          in: query
+          in: path
           description: Id dell`idea di cui recuperare i voti
           required: true
           schema:
@@ -332,3 +332,29 @@ paths:
           description: Voto modificato
         401:
           description: Voto non modificato
+
+  # Doc. dei path /comments
+  /ideas/{ideaId}/comments:
+    post:
+      tags:
+        - comment
+      summary: Creazione di un nuovo commento
+      description: Creazione di un nuovo commento
+      requestBody:
+        description: Contenuto del commento da creare
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                comment:
+                  type: string
+                  example: Contenuto del commento
+      responses:
+        200:
+          description: commento creato
+        401:
+          description: commento non creato
