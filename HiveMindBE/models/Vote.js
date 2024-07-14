@@ -9,7 +9,7 @@ export function createModel(database) {
         primaryKey: true,
         autoIncrement: true,
       },
-      vote_type: {
+      voteType: {
         type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
@@ -19,7 +19,7 @@ export function createModel(database) {
           },
         },
       },
-      vote_date: {
+      creationDate: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
@@ -29,10 +29,11 @@ export function createModel(database) {
       indexes: [
         {
           unique: true,
-          fields: ["user_id", "idea_id"],
+          fields: ["userId", "ideaId"],
           msg: "Un utente può votare un'idea una sola volta.",
         },
       ],
+      createdAt: false,
     }
   );
 }

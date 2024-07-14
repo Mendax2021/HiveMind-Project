@@ -22,11 +22,11 @@ export function createModel(database) {
           len: {
             //definisco gli argomenti della funzione di validazione, ovvero la lunghezza minima e massima della stringa ed il messaggio d`errore
             args: [0, 400],
-            msg: "La descrizione deve essere lunga al massimo 400 caratteri!",
+            msg: "The description must be a maximum of 400 characters long!",
           },
         },
       },
-      creation_date: {
+      creationDate: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
@@ -34,6 +34,7 @@ export function createModel(database) {
     },
     {
       onDelete: "CASCADE",
+      createdAt: false,
     }
   );
 }

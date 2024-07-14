@@ -1,11 +1,11 @@
 import express from "express";
 import { VoteController } from "../controllers/VoteController.js";
 import { ensureUsersModifyOnlyOwnVotes } from "../middleware/authorization.js";
+import { ensureIdeaExists } from "../middleware/ensureIdeaExists.js";
 
 export const voteRouter = express.Router();
 
-//? è necessario passare all`interno del body l`id dell`idea alla quale aggiungere un voto? O è meglio avere un path gerarchico?
-voteRouter.post("/ideas/:ideaId/votes", (req, res, next) => {
+voteRouter.post("/ideas/:ideaId/votes", ensureIdeaExists, (req, res, next) => {
   VoteController.saveVote(req.params.ideaId, req.body, req.userId)
     .then((result) => {
       res.json(result);
@@ -16,7 +16,7 @@ voteRouter.post("/ideas/:ideaId/votes", (req, res, next) => {
 });
 
 // recupero di tutti i voti di un`idea
-voteRouter.get("/ideas/:ideaId/votes", (req, res, next) => {
+voteRouter.get("/ideas/:ideaId/votes", ensureIdeaExists, (req, res, next) => {
   VoteController.getAllVotes(req.params.ideaId, req.query.type)
     .then((items) => {
       res.json(items);

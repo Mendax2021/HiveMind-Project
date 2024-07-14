@@ -2,29 +2,21 @@ import { Vote, Idea } from "../models/HiveMindDB.js";
 
 export class VoteController {
   static async saveVote(ideaId, voteData, userId) {
-    // //? NON SO SE È CORRETTO INCLUDERE IN VOTECONTROLLER, L`IDEA
-
-    // let idea = await Idea.findOne({
-    //   where: {
-    //     id: ideaId,
-    //   },
-    // });
-
-    // if (idea.user_id === userId) throw { status: 400, message: "Non puoi votare la tua idea" };
-
+    const idea = await Idea.findByPk(ideaId);
+    if (!idea) throw { status: 404, message: "This idea does not exist" };
     let existingVote = await Vote.findOne({
       where: {
-        user_id: userId,
-        idea_id: ideaId,
+        userId: userId,
+        ideaId: ideaId,
       },
     });
     if (!existingVote) {
       let newVote = Vote.build(voteData);
-      newVote.user_id = userId;
-      newVote.idea_id = ideaId;
-      newVote.vote_type = voteData.type;
+      newVote.userId = userId;
+      newVote.ideaId = ideaId;
+      newVote.voteType = voteData.type;
       return newVote.save();
-    } else throw { status: 400, message: "Puoi avere al più un voto per questa idea" };
+    } else throw { status: 400, message: "You can have at most one vote for this idea" };
   }
 
   static async updateVote(modifiedVote, voteId) {
@@ -34,9 +26,9 @@ export class VoteController {
       },
     });
     if (existingVote) {
-      existingVote.vote_type = modifiedVote.type;
+      existingVote.voteType = modifiedVote.type;
       return existingVote.save();
-    } else throw { status: 400, message: "Non hai ancora votato questa idea" };
+    } else throw { status: 400, message: "You haven't voted on this idea yet" };
   }
 
   static async findById(voteId) {
@@ -55,7 +47,7 @@ export class VoteController {
 
   static async getAllVotes(ideaId, type) {
     const voteType = type === "upvote" ? 1 : type === "downvote" ? -1 : null;
-    const allVotes = await Vote.findAll(voteType ? { where: { vote_type: voteType, idea_id: ideaId } } : {});
+    const allVotes = await Vote.findAll(voteType ? { where: { voteType: voteType, ideaId: ideaId } } : {});
 
     return {
       votes: allVotes,

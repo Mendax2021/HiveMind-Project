@@ -16,7 +16,7 @@ export class AuthController {
       },
     });
     if (!found) {
-      throw { status: 401, message: "Credenziali invalide, riprova" };
+      throw { status: 401, message: "Invalid credentials, please try again" };
     }
     //ritorna l'utente trovato o null
     return found;
@@ -27,7 +27,7 @@ export class AuthController {
     let userToAdd = new User({ userName: userData.usr, password: userData.pwd });
     let found = await User.findOne({ where: { userName: userToAdd.userName } });
     if (found) {
-      throw { status: 409, message: "Username già in uso" };
+      throw { status: 409, message: "Username already in use" };
     }
     return userToAdd.save();
   }
@@ -48,18 +48,18 @@ export class AuthController {
   static async canUserModifyIdea(userId, ideaId) {
     const idea = await Idea.findByPk(ideaId);
     // l`idea deve esistere ed essere associata all`utente
-    return idea && idea.user_id === userId;
+    return idea && idea.userId === userId;
   }
 
   static async canUserModifyVote(userId, voteId) {
     const vote = await Vote.findByPk(voteId);
     // il voto deve esistere ed essere associata all`utente
-    return vote && vote.user_id === userId;
+    return vote && vote.userId === userId;
   }
 
   static async canUserModifyComment(userId, commentId) {
     const comment = await Comment.findByPk(commentId);
     // il voto deve esistere ed essere associata all`utente
-    return comment && comment.user_id === userId;
+    return comment && comment.userId === userId;
   }
 }

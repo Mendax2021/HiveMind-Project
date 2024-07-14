@@ -2,17 +2,9 @@ import { Idea, Comment, Vote, User } from "../models/HiveMindDB.js";
 import { Op, Sequelize } from "sequelize";
 
 export class IdeaController {
-  /**
-   * Metodo che restituisce tutte le idee presenti nel DB dell'utente corrispondente.
-   */
-  //TODO: Forse da cancellare se non la utilizzo, al suo posto si userà la search (anche per fare questa cosa)
-  static async getAllIdeas(userId) {
-    return Idea.findAll({ where: { user_id: userId } });
-  }
-
   static async saveIdea(userId, ideaData) {
     let idea = Idea.build(ideaData);
-    idea.user_id = userId; // imposto l'id dell'utente loggato come proprietario dell'idea
+    idea.userId = userId; // imposto l'id dell'utente loggato come proprietario dell'idea
     return idea.save();
   }
 
@@ -36,8 +28,9 @@ export class IdeaController {
     return idea.save();
   }
 
+  //TODO: TESTARE FUNZIONAMENTO PER USERID E TYPE
   static async getIdeasBySearch(query) {
-    const { type, page = 1, limit = 10 } = query;
+    const { type, page = 1, limit = 10, userId } = query;
 
     const offset = (page - 1) * limit;
     const oneWeekAgo = new Date();
@@ -85,10 +78,10 @@ export class IdeaController {
         "id",
         "title",
         "description",
-        "creation_date",
-        [Sequelize.fn("SUM", Sequelize.col("Votes.vote_type")), "score"],
-        [Sequelize.literal(`SUM(CASE WHEN Votes.vote_type = 1 THEN 1 ELSE 0 END)`), "upvotes"],
-        [Sequelize.literal(`SUM(CASE WHEN Votes.vote_type = -1 THEN 1 ELSE 0 END)`), "downvotes"],
+        "creationDate",
+        [Sequelize.fn("SUM", Sequelize.col("Votes.voteType")), "score"],
+        [Sequelize.literal(`SUM(CASE WHEN Votes.voteType = 1 THEN 1 ELSE 0 END)`), "upvotes"],
+        [Sequelize.literal(`SUM(CASE WHEN Votes.voteType = -1 THEN 1 ELSE 0 END)`), "downvotes"],
         [Sequelize.literal(`COUNT(Votes.id)`), "totalVotes"],
       ],
       include: [
@@ -103,7 +96,8 @@ export class IdeaController {
         { model: Vote, attributes: [] },
       ],
       group: ["Idea.id", "Comments.id", "Comments.User.id", "User.id"],
-      where: { creation_date: { [Op.gte]: oneWeekAgo } },
+      //tramite lo spread operator espando l`oggetto contenente lo userId se è presente
+      where: { creationDate: { [Op.gte]: oneWeekAgo }, ...(userId ? { userId } : {}) },
       having, // filtro per la controversia
       order,
       limit,

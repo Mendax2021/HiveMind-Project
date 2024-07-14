@@ -22,47 +22,47 @@ export const { User, Idea, Comment, Vote } = database.models;
 //configuro le associazioni:
 //Utente 1 - N Idea
 User.Ideas = User.hasMany(Idea, {
-  foreignKey: { name: "user_id", allowNull: false },
+  foreignKey: { name: "userId", allowNull: false },
 });
 
 Idea.User = Idea.belongsTo(User, {
-  foreignKey: { name: "user_id", allowNull: false },
+  foreignKey: { name: "userId", allowNull: false },
 });
 
 //Utente 1 - N Commento
 User.Comments = User.hasMany(Comment, {
-  foreignKey: { name: "user_id", allowNull: false },
+  foreignKey: { name: "userId", allowNull: false },
 });
 
 Comment.User = Comment.belongsTo(User, {
-  foreignKey: { name: "user_id", allowNull: false },
+  foreignKey: { name: "userId", allowNull: false },
 });
 
 //Utente 1 - N Voto
 User.Votes = User.hasMany(Vote, {
-  foreignKey: { name: "user_id", allowNull: false },
+  foreignKey: { name: "userId", allowNull: false },
 });
 
 Vote.User = Vote.belongsTo(User, {
-  foreignKey: { name: "user_id", allowNull: false },
+  foreignKey: { name: "userId", allowNull: false },
 });
 
 //Idea 1 - N Commento
 Idea.Comments = Idea.hasMany(Comment, {
-  foreignKey: { name: "idea_id", allowNull: false },
+  foreignKey: { name: "ideaId", allowNull: false },
 });
 
 Comment.Idea = Comment.belongsTo(Idea, {
-  foreignKey: { name: "idea_id", allowNull: false },
+  foreignKey: { name: "ideaId", allowNull: false },
 });
 
 //Idea 1 - N Voto
 Idea.Votes = Idea.hasMany(Vote, {
-  foreignKey: { name: "idea_id", allowNull: false },
+  foreignKey: { name: "ideaId", allowNull: false },
 });
 
 Vote.Idea = Vote.belongsTo(Idea, {
-  foreignKey: { name: "idea_id", allowNull: false },
+  foreignKey: { name: "ideaId", allowNull: false },
 });
 
 //sincronizzazione dello scehma del database
