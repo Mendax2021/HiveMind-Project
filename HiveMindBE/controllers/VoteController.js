@@ -2,8 +2,8 @@ import { Vote, Idea } from "../models/HiveMindDB.js";
 
 export class VoteController {
   static async saveVote(ideaId, voteData, userId) {
-    const idea = await Idea.findByPk(ideaId);
-    if (!idea) throw { status: 404, message: "This idea does not exist" };
+    // const idea = await Idea.findByPk(ideaId);
+    // if (!idea) throw { status: 404, message: "This idea does not exist" };
     let existingVote = await Vote.findOne({
       where: {
         userId: userId,

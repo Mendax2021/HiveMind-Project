@@ -4,7 +4,6 @@ import { ensureUsersModifyOnlyOwnIdeas } from "../middleware/authorization.js";
 import { ensureIdeaExists } from "../middleware/ensureIdeaExists.js";
 export const ideaRouter = express.Router();
 
-//TODO: TESTARE FUNZIONAMENTO PER USERID E TYPE
 ideaRouter.get("/ideas/search", (req, res, next) => {
   IdeaController.getIdeasBySearch(req.query)
     .then((ideas) => {

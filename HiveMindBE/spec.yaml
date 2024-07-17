@@ -143,6 +143,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: userId
+          in: query
+          description: Id dell`utente di cui recuperare le idee
+          required: false
+          schema:
+            type: string
       description: >
         Recupero delle idee presenti nel sistema a seconda della tipologia
       responses:

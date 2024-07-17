@@ -28,14 +28,13 @@ export class IdeaController {
     return idea.save();
   }
 
-  //TODO: TESTARE FUNZIONAMENTO PER USERID E TYPE
   static async getIdeasBySearch(query) {
     const { type, page = 1, limit = 10, userId } = query;
 
     const offset = (page - 1) * limit;
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
+    console.log(userId);
     let order, having;
     // switch per determinare l'ordinamento delle idee
     switch (type) {
@@ -56,7 +55,7 @@ export class IdeaController {
       case "controversial":
         order = [["totalVotes", "DESC"]];
         /**
-         * soglia del 10% di controversia tra upvotes e downvotes così da esser
+         * soglia del 20% di controversia tra upvotes e downvotes così da esser
          * proporzionato in base al numero di voti totali
          */
         const controversyThreshold = 0.2;
@@ -72,14 +71,12 @@ export class IdeaController {
       default:
         return [];
     }
-
     const ideas = await Idea.findAll({
       attributes: [
         "id",
         "title",
         "description",
         "creationDate",
-        [Sequelize.fn("SUM", Sequelize.col("Votes.voteType")), "score"],
         [Sequelize.literal(`SUM(CASE WHEN Votes.voteType = 1 THEN 1 ELSE 0 END)`), "upvotes"],
         [Sequelize.literal(`SUM(CASE WHEN Votes.voteType = -1 THEN 1 ELSE 0 END)`), "downvotes"],
         [Sequelize.literal(`COUNT(Votes.id)`), "totalVotes"],
@@ -105,6 +102,7 @@ export class IdeaController {
       subQuery: false, // necessario per rendere più efficiente la query ed evitare errori con il group by
     });
 
+    console.log(ideas);
     return {
       content: ideas,
       page,
