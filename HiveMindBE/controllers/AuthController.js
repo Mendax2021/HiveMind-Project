@@ -1,4 +1,5 @@
 import { User, Idea, Vote, Comment } from "../models/HiveMindDB.js";
+import { generateHttpError } from "../utils/common.utils.js";
 import Jwt from "jsonwebtoken";
 
 export class AuthController {
@@ -16,7 +17,7 @@ export class AuthController {
       },
     });
     if (!found) {
-      throw { status: 401, message: "Invalid credentials, please try again" };
+      throw generateHttpError(401, "Invalid credentials, please try again");
     }
     //ritorna l'utente trovato o null
     return found;
@@ -27,7 +28,7 @@ export class AuthController {
     let userToAdd = new User({ userName: userData.usr, password: userData.pwd });
     let found = await User.findOne({ where: { userName: userToAdd.userName } });
     if (found) {
-      throw { status: 409, message: "Username already in use" };
+      throw generateHttpError(409, "Username already in use");
     }
     return userToAdd.save();
   }
