@@ -89,7 +89,7 @@ paths:
           description: Id dell`utente di cui recuperare le idee
           required: true
           schema:
-            type: string
+            type: integer
       description: >
         Recupero di tutte le idee presenti nel sistemadi un dato utente il cui Id è passato
         nei params.
@@ -148,7 +148,7 @@ paths:
           description: Id dell`utente di cui recuperare le idee
           required: false
           schema:
-            type: string
+            type: integer
       description: >
         Recupero delle idee presenti nel sistema a seconda della tipologia
       responses:
@@ -343,7 +343,7 @@ paths:
   /ideas/{ideaId}/comments:
     post:
       tags:
-        - comment
+        - Comment
       summary: Creazione di un nuovo commento
       description: Creazione di un nuovo commento
       requestBody:
@@ -364,3 +364,53 @@ paths:
           description: commento creato
         401:
           description: commento non creato
+
+  /comments/{commentId}:
+    delete:
+      tags:
+        - Comment
+      summary: Eliminazione di un proprio commento
+      parameters:
+        - name: commentId
+          in: path
+          description: Id del commento da eliminare
+          required: true
+          schema:
+            type: string
+      description: Eliminazione di un singolo commento
+      responses:
+        200:
+          description: Commento eliminato
+        401:
+          description: Commento non eliminato
+
+    put:
+      tags:
+        - Comment
+      summary: Modifica di un proprio commento
+      parameters:
+        - name: commentId
+          in: path
+          description: Id del commento da modificare
+          required: true
+          schema:
+            type: string
+      description: Modifica di un commento
+      requestBody:
+        description: contenuto del commento aggiornato
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                comment:
+                  type: string
+                  example: Contenuto del commento
+      responses:
+        200:
+          description: Commento modificato
+        401:
+          description: Commento non modificato

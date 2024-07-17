@@ -35,9 +35,9 @@ app.use(
 );
 
 // Routes
+app.use(checkNonEmptyBodyFields);
 app.use(authenticationRouter);
 app.use(enforceAuthentication);
-app.use(checkNonEmptyBodyFields);
 app.use(ideaRouter);
 app.use(voteRouter);
 app.use(commentRouter);

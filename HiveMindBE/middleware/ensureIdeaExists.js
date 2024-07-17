@@ -1,4 +1,5 @@
 import { IdeaController } from "../controllers/IdeaController.js";
+import { generateHttpError } from "../utils/common.utils.js";
 
 export async function ensureIdeaExists(req, res, next) {
   const ideaId = req.params.ideaId;
@@ -6,6 +7,6 @@ export async function ensureIdeaExists(req, res, next) {
   if (idea) {
     next();
   } else {
-    next({ status: 404, message: "this idea doesn`t exist" });
+    next(generateHttpError(404, "this idea doesn`t exist"));
   }
 }

@@ -14,3 +14,23 @@ commentRouter.post("/ideas/:ideaId/comments", ensureIdeaExists, (req, res, next)
       next(err);
     });
 });
+
+commentRouter.put("/comments/:commentId", ensureUsersModifyOnlyOwnComments, (req, res, next) => {
+  CommentController.update(req.params.commentId, req.body)
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
+
+commentRouter.delete("/comments/:commentId", ensureUsersModifyOnlyOwnComments, (req, res, next) => {
+  CommentController.delete(req.params.commentId)
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      next(err);
+    });
+});

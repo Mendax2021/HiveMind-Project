@@ -28,8 +28,7 @@ ideaRouter.get("/ideas/:ideaId", ensureIdeaExists, ensureUsersModifyOnlyOwnIdeas
   console.log("userId", req.params.userId);
   IdeaController.findById(req.params.ideaId)
     .then((item) => {
-      if (item) res.json(item);
-      else next({ status: 404, message: "Idea not found" });
+      res.json(item);
     })
     .catch((err) => {
       next(err);
@@ -39,8 +38,7 @@ ideaRouter.get("/ideas/:ideaId", ensureIdeaExists, ensureUsersModifyOnlyOwnIdeas
 ideaRouter.delete("/ideas/:ideaId", ensureIdeaExists, ensureUsersModifyOnlyOwnIdeas, (req, res, next) => {
   IdeaController.delete(req.params.ideaId)
     .then((item) => {
-      if (item) res.json(item);
-      else next({ status: 404, message: "Idea not found" });
+      res.json(item);
     })
     .catch((err) => {
       next(err);
@@ -50,8 +48,7 @@ ideaRouter.delete("/ideas/:ideaId", ensureIdeaExists, ensureUsersModifyOnlyOwnId
 ideaRouter.put("/ideas/:ideaId", ensureIdeaExists, ensureUsersModifyOnlyOwnIdeas, (req, res, next) => {
   IdeaController.update(req.params.ideaId, req.body)
     .then((item) => {
-      if (item) res.json(item);
-      else next({ status: 404, message: "Idea not found" });
+      res.json(item);
     })
     .catch((err) => {
       next(err);

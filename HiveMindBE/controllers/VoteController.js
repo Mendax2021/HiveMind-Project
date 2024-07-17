@@ -1,9 +1,8 @@
 import { Vote, Idea } from "../models/HiveMindDB.js";
+import { generateHttpError } from "../utils/common.utils.js";
 
 export class VoteController {
   static async saveVote(ideaId, voteData, userId) {
-    // const idea = await Idea.findByPk(ideaId);
-    // if (!idea) throw { status: 404, message: "This idea does not exist" };
     let existingVote = await Vote.findOne({
       where: {
         userId: userId,
@@ -13,10 +12,10 @@ export class VoteController {
     if (!existingVote) {
       let newVote = Vote.build(voteData);
       newVote.userId = userId;
-      newVote.ideaId = ideaId;
+      newVote.ideaId = +ideaId;
       newVote.voteType = voteData.type;
       return newVote.save();
-    } else throw { status: 400, message: "You can have at most one vote for this idea" };
+    } else throw generateHttpError(400, "You can have at most one vote for this idea");
   }
 
   static async updateVote(modifiedVote, voteId) {
@@ -28,7 +27,7 @@ export class VoteController {
     if (existingVote) {
       existingVote.voteType = modifiedVote.type;
       return existingVote.save();
-    } else throw { status: 400, message: "You haven't voted on this idea yet" };
+    } else throw generateHttpError(400, "You haven't voted on this idea yet");
   }
 
   static async findById(voteId) {
@@ -47,7 +46,12 @@ export class VoteController {
 
   static async getAllVotes(ideaId, type) {
     const voteType = type === "upvote" ? 1 : type === "downvote" ? -1 : null;
-    const allVotes = await Vote.findAll(voteType ? { where: { voteType: voteType, ideaId: ideaId } } : {});
+    const allVotes = await Vote.findAll({
+      where: {
+        ideaId: ideaId,
+        ...(voteType ? { voteType: voteType } : {}),
+      },
+    });
 
     return {
       votes: allVotes,

@@ -1,4 +1,5 @@
 import { AuthController } from "../controllers/AuthController.js";
+import { generateHttpError } from "../utils/common.utils.js";
 
 /**
  * Questo middleware garantisce che l'utente sia attualmente autenticato.
@@ -13,12 +14,12 @@ export function enforceAuthentication(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader?.split(" ")[1];
   if (!token) {
-    next({ status: 401, message: "Unauthorized" });
+    next(generateHttpError(401, "Unauthorized"));
     return;
   }
   AuthController.isTokenValid(token, (err, decodedToken) => {
     if (err) {
-      next({ status: 401, message: "Unauthorized" });
+      next(generateHttpError(401, "Unauthorized"));
     } else {
       req.username = decodedToken.user.username; //aggiungo una proprietà username all'oggetto req
       req.userId = decodedToken.user.id; //aggiungo una proprietà userId all'oggetto req
@@ -34,10 +35,7 @@ export async function ensureUsersModifyOnlyOwnIdeas(req, res, next) {
   if (userHasPermission) {
     next();
   } else {
-    next({
-      status: 403,
-      message: "Forbidden! You do not have permissions to view or modify this resource",
-    });
+    next(generateHttpError(403, "Forbidden! You do not have permissions to view or modify this resource"));
   }
 }
 
@@ -48,23 +46,17 @@ export async function ensureUsersModifyOnlyOwnVotes(req, res, next) {
   if (userHasPermission) {
     next();
   } else {
-    next({
-      status: 403,
-      message: "Forbidden! You do not have permissions to view or modify this resource",
-    });
+    next(generateHttpError(403, "Forbidden! You do not have permissions to view or modify this resource"));
   }
 }
 
 export async function ensureUsersModifyOnlyOwnComments(req, res, next) {
   const userId = req.userId;
-  const commentId = req.params.id;
+  const commentId = req.params.commentId;
   const userHasPermission = await AuthController.canUserModifyComment(userId, commentId);
   if (userHasPermission) {
     next();
   } else {
-    next({
-      status: 403,
-      message: "Forbidden! You do not have permissions to view or modify this resource",
-    });
+    next(generateHttpError(403, "Forbidden! You do not have permissions to view or modify this resource"));
   }
 }

@@ -1,5 +1,6 @@
 import { Idea, Comment, Vote, User } from "../models/HiveMindDB.js";
 import { Op, Sequelize } from "sequelize";
+import { generateHttpError } from "../utils/common.utils.js";
 
 export class IdeaController {
   static async saveIdea(userId, ideaData) {
@@ -23,7 +24,18 @@ export class IdeaController {
   }
 
   static async update(id, updatedIdea) {
-    let idea = await Idea.findByPk(id);
+    let idea = await this.findById(id);
+
+    const threshold = 15;
+
+    const creationTime = new Date(idea.creationDate);
+    const currentTime = new Date();
+    const timeDifference = (currentTime - creationTime) / (1000 * 60);
+
+    if (timeDifference > threshold) {
+      throw generateHttpError(400, `Cannot modify comment after ${threshold} minutes of creation`);
+    }
+
     idea.set(updatedIdea);
     return idea.save();
   }
@@ -102,7 +114,6 @@ export class IdeaController {
       subQuery: false, // necessario per rendere più efficiente la query ed evitare errori con il group by
     });
 
-    console.log(ideas);
     return {
       content: ideas,
       page,

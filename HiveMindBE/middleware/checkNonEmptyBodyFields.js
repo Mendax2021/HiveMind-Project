@@ -1,3 +1,5 @@
+import { generateHttpError } from "../utils/common.utils.js";
+
 export async function checkNonEmptyBodyFields(req, res, next) {
   const body = req.body;
   const regex = /^[^a-zA-Z0-9]*$/;
@@ -7,7 +9,7 @@ export async function checkNonEmptyBodyFields(req, res, next) {
       const sanitizedValue = body[key].trimEnd();
 
       if (regex.test(sanitizedValue)) {
-        next({ status: 400, message: `Field ${key} cannot be empty or contain only special characters` });
+        next(generateHttpError(400, `Field "${key}" cannot be empty or contain only special characters`));
         return;
       }
       body[key] = sanitizedValue;
