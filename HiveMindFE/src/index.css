@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.border-b-5c5c5c {
+  border-bottom-color: #5c5c5c;
+}
+
+.border-r-5c5c5c {
+  border-right-color: #5c5c5c;
+}
+
+.border-t-5c5c5c {
+  border-bottom-color: #5c5c5c;
+}
+
+.border-l-5c5c5c {
+  border-left-color: #5c5c5c;
+}
+
+.border-5c5c5c {
+  border: 1px solid #5c5c5c;
+}
+
+.toaster-animation {
+  animation: customFadeIn 0.5s ease-in-out;
+}
+
+@keyframes customFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
