@@ -49,7 +49,7 @@ export default function Sidebar(props: { direction: "left" | "right" }) {
                   Posta
                 </Button>
               </span>
-              <div className="relative w-full">
+              <div className="relative w-full p-4">
                 <ProfileButton></ProfileButton>
               </div>
             </div>

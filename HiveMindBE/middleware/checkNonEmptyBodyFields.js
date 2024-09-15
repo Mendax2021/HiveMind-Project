@@ -1,6 +1,12 @@
 import { generateHttpError } from "../utils/common.utils.js";
 
 export async function checkNonEmptyBodyFields(req, res, next) {
+  console.log(req.headers);
+  if (req.headers["content-type"] && req.headers["content-type"].includes("multipart/form-data")) {
+    next();
+    return;
+  }
+
   const body = req.body;
   const regex = /^[^a-zA-Z0-9]*$/;
 

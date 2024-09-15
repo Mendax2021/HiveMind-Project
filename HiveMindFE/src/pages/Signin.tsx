@@ -1,39 +1,124 @@
 import { Button, Input, Link } from "@nextui-org/react";
 import Icon from "../shared/components/Icon";
-import { useCallback, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useState } from "react";
+import { SignInData } from "../shared/models/SignInData.model";
+import { AuthRequest } from "../shared/models/AuthRequest.model";
+import { signIn } from "../services/AuthService";
+import { useNavigate } from "react-router-dom";
 
-export default function Signin() {
-  const [isVisible, setIsVisible] = useState(false);
+export default function SignIn() {
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [signInData, setSignInData] = useState<SignInData>({
+    usr: {
+      value: "",
+      isDirty: false,
+      validateCriteria: (value: string) => {
+        const regex = /^[^a-zA-Z0-9]*$/;
+        if (value.length === 0) return "Il campo Username non può essere vuoto";
+        if (regex.test(value)) return "Il campo Username non può contenere SOLO caratteri speciali";
+        return "";
+      },
+    },
+    pwd: {
+      value: "",
+      isDirty: false,
+      validateCriteria: (value: string) => {
+        if (value.length === 0) return "Il campo Password non può essere vuoto";
+        return "";
+      },
+    },
+  });
 
   const toggleVisibility = useCallback(() => setIsVisible(!isVisible), [isVisible]);
 
+  const handleInputChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const updatedFormData: SignInData = { ...signInData };
+      const changedIdInput = event.target.id as keyof SignInData;
+      updatedFormData[changedIdInput].value = event.target.value;
+      if (!updatedFormData[changedIdInput].isDirty) updatedFormData[changedIdInput].isDirty = true;
+      setSignInData(updatedFormData);
+    },
+    [signInData]
+  );
+
+  const handleSubmit = useCallback(
+    (event: FormEvent) => {
+      event.preventDefault();
+
+      const authRequest: AuthRequest = {
+        usr: signInData.usr.value,
+        pwd: signInData.pwd.value,
+      };
+      signIn(authRequest).then((response) => {
+        console.log(response.data.token);
+        console.log(response.data);
+        localStorage.setItem("token", response.data.token);
+        navigate("/home");
+      });
+    },
+    [signInData]
+  );
+
+  const deleteUsername = useCallback(() => {
+    const updatedFormData: SignInData = { ...signInData };
+    updatedFormData.usr.value = "";
+    setSignInData(updatedFormData);
+  }, [signInData]);
+
+  const navigate = useNavigate();
+
   return (
-    <div className="flex flex-col justify-center h-screen items-center space-y-4">
+    <div className="flex flex-col justify-center min-h-screen items-center space-y-4">
       <h1 className="text-4xl font-bold">Sign in</h1>
-      <div className="flex flex-col items-center border-2 border-5c5c5c rounded-lg space-y-10 p-5 ">
-        <Input
-          label="Username"
-          labelPlacement="outside"
-          variant="bordered"
-          size="lg"
-          startContent={<Icon icon="bi-person" />}
-        />
-        <Input
-          label="Password"
-          variant="bordered"
-          labelPlacement="outside"
-          size="lg"
-          startContent={<Icon icon="bi-key" />}
-          endContent={
-            <button type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
-              <Icon icon={isVisible ? "bi-eye" : "bi-eye-slash"} />
-            </button>
-          }
-          type={isVisible ? "text" : "password"}
-        />
-        <Button className=" font-bold text-large" radius="md" fullWidth color="secondary">
-          Sign in
-        </Button>
+      <div className="flex flex-col items-center border-2 border-5c5c5c rounded-lg p-5 ">
+        <form className="space-y-8" onSubmit={handleSubmit}>
+          <Input
+            isRequired
+            id="usr"
+            label="Username"
+            labelPlacement="outside"
+            variant="bordered"
+            size="lg"
+            startContent={<Icon icon="bi-person" />}
+            endContent={
+              signInData.usr.value.length !== 0 && (
+                <button tabIndex={-1} type="button" onClick={deleteUsername} aria-label="delete username">
+                  <Icon icon="bi-x-circle" />
+                </button>
+              )
+            }
+            onChange={handleInputChange}
+            value={signInData.usr.value}
+            isInvalid={signInData.usr.isDirty && !!signInData.usr.validateCriteria?.(signInData.usr.value)}
+            errorMessage={signInData.usr.isDirty && signInData.usr.validateCriteria?.(signInData.usr.value)}
+            classNames={{
+              errorMessage: "max-w-64",
+            }}
+          />
+          <Input
+            isRequired
+            id="pwd"
+            label="Password"
+            variant="bordered"
+            labelPlacement="outside"
+            size="lg"
+            startContent={<Icon icon="bi-key" />}
+            endContent={
+              <button tabIndex={-1} type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
+                <Icon icon={isVisible ? "bi-eye" : "bi-eye-slash"} />
+              </button>
+            }
+            type={isVisible ? "text" : "password"}
+            onChange={handleInputChange}
+            value={signInData.pwd.value}
+            isInvalid={signInData.pwd.isDirty && !!signInData.pwd.validateCriteria?.(signInData.pwd.value)}
+            errorMessage={signInData.pwd.isDirty && signInData.pwd.validateCriteria?.(signInData.pwd.value)}
+          />
+          <Button type="submit" className="font-bold text-large" radius="md" fullWidth color="secondary">
+            Sign in
+          </Button>
+        </form>
       </div>
       <p>
         Non sei registrato?

@@ -1,8 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import Home from "./pages/Home.tsx";
-import Signin from "./pages/Signin.tsx";
+import SignIn from "./pages/SignIn.tsx";
 import App from "./App.tsx";
-import Signup from "./pages/Signup.tsx";
+import SignUp from "./pages/SignUp.tsx";
+import AuthGuard from "./shared/components/AuthGuard/AuthGuard.tsx";
 
 //const HomePage = LazyLoad(lazy(() => import("./App"))); come fare per importare componenti lazy
 
@@ -18,15 +19,27 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/home",
-        element: <Home />,
+        element: (
+          <AuthGuard isProtected>
+            <Home />
+          </AuthGuard>
+        ),
       },
       {
-        path: "/signin",
-        element: <Signin />,
+        path: "/signIn",
+        element: (
+          <AuthGuard>
+            <SignIn />
+          </AuthGuard>
+        ),
       },
       {
-        path: "/signup",
-        element: <Signup />,
+        path: "/signUp",
+        element: (
+          <AuthGuard>
+            <SignUp />
+          </AuthGuard>
+        ),
       },
     ],
   },

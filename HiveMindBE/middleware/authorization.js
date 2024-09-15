@@ -21,6 +21,7 @@ export function enforceAuthentication(req, res, next) {
     if (err) {
       next(generateHttpError(401, "Unauthorized"));
     } else {
+      console.log("Decoded token", decodedToken);
       req.username = decodedToken.user.username; //aggiungo una proprietà username all'oggetto req
       req.userId = decodedToken.user.id; //aggiungo una proprietà userId all'oggetto req
       next();
@@ -54,6 +55,17 @@ export async function ensureUsersModifyOnlyOwnComments(req, res, next) {
   const userId = req.userId;
   const commentId = req.params.commentId;
   const userHasPermission = await AuthController.canUserModifyComment(userId, commentId);
+  if (userHasPermission) {
+    next();
+  } else {
+    next(generateHttpError(403, "Forbidden! You do not have permissions to view or modify this resource"));
+  }
+}
+
+export async function ensureUsersModifyOnlyOwnProfileImage(req, res, next) {
+  const userId = req.userId;
+  const userHasPermission = await AuthController.canUserModifyProfileImage(userId);
+  console.log("User has permission", userHasPermission);
   if (userHasPermission) {
     next();
   } else {

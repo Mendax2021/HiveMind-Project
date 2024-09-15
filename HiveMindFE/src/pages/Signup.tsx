@@ -1,13 +1,14 @@
 import { Button, Input, Link } from "@nextui-org/react";
 import Icon from "../shared/components/Icon";
 import { ChangeEvent, FormEvent, useCallback, useState } from "react";
-import { AuthRequest, SignupData } from "../shared/models/AuthRequest.model";
-import { signup } from "../services/AuthService";
+import { AuthRequest } from "../shared/models/AuthRequest.model";
+import { SignUpData } from "../shared/models/SignUpData.model";
+import { signUp } from "../services/AuthService";
 import toast from "react-hot-toast";
 
-export default function Signup() {
+export default function SignUp() {
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [signupData, setSignupData] = useState<SignupData>({
+  const [signUpData, setSignupData] = useState<SignUpData>({
     usr: {
       value: "",
       isDirty: false,
@@ -23,7 +24,12 @@ export default function Signup() {
       isDirty: false,
       validateCriteria: (value: string) => {
         if (value.length === 0) return "Il campo Password non può essere vuoto";
-        if (value === signupData.confirmPassword.value) return "Le password non corrispondono";
+        if (
+          value.length !== 0 &&
+          signUpData.confirmPassword.value.length !== 0 &&
+          value !== signUpData.confirmPassword.value
+        )
+          return "Le password non corrispondono";
         return "";
       },
     },
@@ -32,7 +38,8 @@ export default function Signup() {
       isDirty: false,
       validateCriteria: (value: string) => {
         if (value.length === 0) return "Il campo Password non può essere vuoto";
-        if (value === signupData.confirmPassword.value) return "Le password non corrispondono";
+        if (value.length !== 0 && signUpData.confirmPassword.value.length !== 0 && value !== signUpData.pwd.value)
+          return "Le password non corrispondono";
         return "";
       },
     },
@@ -41,26 +48,26 @@ export default function Signup() {
   const toggleVisibility = useCallback(() => setIsVisible(!isVisible), [isVisible]);
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      const updatedFormData: SignupData = { ...signupData };
+      const updatedFormData: SignUpData = { ...signUpData };
       //cast per far si che updateFormData accetti un key di SignupData
       //inoltre rinomino gli id per far si che combacino con le chiavi di SignupData
-      const changedIdInput = event.target.id as keyof SignupData;
+      const changedIdInput = event.target.id as keyof SignUpData;
       updatedFormData[changedIdInput].value = event.target.value;
       if (!updatedFormData[changedIdInput].isDirty) updatedFormData[changedIdInput].isDirty = true;
       setSignupData(updatedFormData);
     },
-    [signupData]
+    [signUpData]
   );
 
   const handleSubmit = useCallback(
     (event: FormEvent) => {
       event.preventDefault();
-      // const confirmPwd = signupData.confirmPassword;
+
       const authRequest: AuthRequest = {
-        usr: signupData.usr.value,
-        pwd: signupData.pwd.value,
+        usr: signUpData.usr.value,
+        pwd: signUpData.pwd.value,
       };
-      signup(authRequest).then(() => {
+      signUp(authRequest).then(() => {
         toast.custom(
           <div className="toaster-animation rounded-xl flex bg-success items-center p-2 gap-3">
             <div>
@@ -77,13 +84,19 @@ export default function Signup() {
         );
       });
     },
-    [signupData]
+    [signUpData]
   );
+
+  const deleteUsername = useCallback(() => {
+    const updatedFormData: SignUpData = { ...signUpData };
+    updatedFormData.usr.value = "";
+    setSignupData(updatedFormData);
+  }, [signUpData]);
 
   return (
     <div className="flex flex-col justify-center min-h-screen items-center space-y-4">
       <h1 className="text-4xl font-bold">Sign up</h1>
-      <div className="flex flex-col items-center border-2 border-5c5c5c rounded-lg  p-5 ">
+      <div className="flex flex-col items-center border-2 border-5c5c5c rounded-lg p-5">
         <form className="space-y-8" onSubmit={handleSubmit}>
           <Input
             isRequired
@@ -93,9 +106,19 @@ export default function Signup() {
             variant="bordered"
             size="lg"
             startContent={<Icon icon="bi-person" />}
-            value={signupData.usr.value}
-            isInvalid={signupData.usr.isDirty && !!signupData.usr.validateCriteria(signupData.usr.value)}
-            errorMessage={signupData.usr.isDirty && signupData.usr.validateCriteria(signupData.usr.value)}
+            endContent={
+              signUpData.usr.value.length !== 0 && (
+                <button tabIndex={-1} type="button" onClick={deleteUsername} aria-label="delete username">
+                  <Icon icon="bi-x-circle" />
+                </button>
+              )
+            }
+            value={signUpData.usr.value}
+            isInvalid={signUpData.usr.isDirty && !!signUpData.usr.validateCriteria?.(signUpData.usr.value)}
+            errorMessage={signUpData.usr.isDirty && signUpData.usr.validateCriteria?.(signUpData.usr.value)}
+            classNames={{
+              errorMessage: "max-w-64",
+            }}
             onChange={handleInputChange}
           />
           <Input
@@ -107,14 +130,14 @@ export default function Signup() {
             size="lg"
             startContent={<Icon icon="bi-key" />}
             endContent={
-              <button type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
+              <button tabIndex={-1} type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
                 <Icon icon={isVisible ? "bi-eye" : "bi-eye-slash"} />
               </button>
             }
             type={isVisible ? "text" : "password"}
-            value={signupData.pwd.value}
-            isInvalid={signupData.pwd.isDirty && !!signupData.pwd.validateCriteria(signupData.pwd.value)}
-            errorMessage={signupData.pwd.isDirty && signupData.pwd.validateCriteria(signupData.pwd.value)}
+            value={signUpData.pwd.value}
+            isInvalid={signUpData.pwd.isDirty && !!signUpData.pwd.validateCriteria?.(signUpData.pwd.value)}
+            errorMessage={signUpData.pwd.isDirty && signUpData.pwd.validateCriteria?.(signUpData.pwd.value)}
             onChange={handleInputChange}
           />
           <Input
@@ -126,20 +149,23 @@ export default function Signup() {
             size="lg"
             startContent={<Icon icon="bi-key" />}
             endContent={
-              <button type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
+              <button tabIndex={-1} type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
                 <Icon icon={isVisible ? "bi-eye" : "bi-eye-slash"} />
               </button>
             }
             type={isVisible ? "text" : "password"}
-            value={signupData.confirmPassword.value}
+            value={signUpData.confirmPassword.value}
             isInvalid={
-              signupData.confirmPassword.isDirty &&
-              !!signupData.confirmPassword.validateCriteria(signupData.confirmPassword.value)
+              signUpData.confirmPassword.isDirty &&
+              !!signUpData.confirmPassword.validateCriteria?.(signUpData.confirmPassword.value)
             }
-            errorMessage={signupData.confirmPassword.validateCriteria(signupData.confirmPassword.value)}
+            errorMessage={
+              signUpData.confirmPassword.isDirty &&
+              signUpData.confirmPassword.validateCriteria?.(signUpData.confirmPassword.value)
+            }
             onChange={handleInputChange}
           />
-          <Button type="submit" className=" font-bold text-large" radius="md" fullWidth color="secondary">
+          <Button type="submit" className="font-bold text-large" radius="md" fullWidth color="secondary">
             Sign up
           </Button>
         </form>

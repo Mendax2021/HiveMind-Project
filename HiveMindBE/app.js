@@ -12,6 +12,7 @@ import { ideaRouter } from "./routes/ideaRouter.js";
 import { voteRouter } from "./routes/voteRouter.js";
 import { checkNonEmptyBodyFields } from "./middleware/checkNonEmptyBodyFields.js";
 import { commentRouter } from "./routes/commentRouter.js";
+import { userRouter } from "./routes/userRouter.js";
 
 const app = express();
 const PORT = 3000;
@@ -41,6 +42,7 @@ app.use(enforceAuthentication);
 app.use(ideaRouter);
 app.use(voteRouter);
 app.use(commentRouter);
+app.use(userRouter);
 
 app.use((err, req, res, next) => {
   console.log(err.stack); //se non è presente stack, stamperà undefined

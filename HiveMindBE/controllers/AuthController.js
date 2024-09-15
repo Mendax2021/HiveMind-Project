@@ -34,10 +34,22 @@ export class AuthController {
   }
 
   static issueToken(user) {
+    // delete user.dataValues.updatedAt;
     // genera un token JWT con l'id e il nome utente
-    const createdToken = Jwt.sign({ user: { id: user.id, username: user.userName } }, process.env.TOKEN_SECRET, {
-      expiresIn: `${24 * 60 * 60}s`,
-    });
+    const createdToken = Jwt.sign(
+      {
+        user: {
+          id: user.id,
+          username: user.userName,
+          registrationDate: user.registrationDate,
+          profileImage: user.profileImage,
+        },
+      },
+      process.env.TOKEN_SECRET,
+      {
+        expiresIn: `${24 * 60 * 60}s`,
+      }
+    );
 
     return { token: createdToken };
   }
@@ -48,6 +60,7 @@ export class AuthController {
 
   static async canUserModifyIdea(userId, ideaId) {
     const idea = await Idea.findByPk(ideaId);
+    console.log("Idea", idea);
     // l`idea deve esistere ed essere associata all`utente
     return idea && idea.userId === userId;
   }
@@ -62,5 +75,13 @@ export class AuthController {
     const comment = await Comment.findByPk(commentId);
     // il voto deve esistere ed essere associata all`utente
     return comment && comment.userId === userId;
+  }
+
+  static async canUserModifyProfileImage(userId) {
+    console.log("User id", userId);
+    const user = await User.findByPk(userId);
+    console.log("User", user);
+    // l`utente deve esistere ed essere associata all`utente
+    return user && user.id === userId;
   }
 }

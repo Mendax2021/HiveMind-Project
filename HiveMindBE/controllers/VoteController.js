@@ -1,4 +1,4 @@
-import { Vote, Idea } from "../models/HiveMindDB.js";
+import { Vote } from "../models/HiveMindDB.js";
 import { generateHttpError } from "../utils/common.utils.js";
 
 export class VoteController {

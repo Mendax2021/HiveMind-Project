@@ -2,10 +2,10 @@ import Icon from "../Icon.tsx";
 import { Avatar } from "@nextui-org/react";
 import PopUpMenu from "./PopUpMenu.tsx";
 import { useCallback, useState } from "react";
+import style from "./profileButton.module.css";
 
 export default function ProfileButton() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  // TODO: ANDARE A LEGGERE DOC USECALLBACK.
   const toggleMenu = useCallback(() => {
     setIsOpen(!isOpen);
   }, [isOpen]);
@@ -18,7 +18,7 @@ export default function ProfileButton() {
       >
         <Avatar src="https://i.pravatar.cc/150?u=a042581f4e29026704d" size="md" />
         <h3>EcoElettronico</h3>
-        <div className="text-2xl">
+        <div className={`text-2xl ${isOpen ? style.rotate : ""}`}>
           <Icon icon={`bi-gear`} />
         </div>
       </div>

@@ -1,6 +1,5 @@
 import { DataTypes } from "sequelize";
 import { createHash } from "crypto";
-import { on } from "events";
 
 export function createModel(database) {
   database.define(
@@ -28,6 +27,10 @@ export function createModel(database) {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
+      },
+      profileImage: {
+        type: DataTypes.BLOB,
+        allowNull: true,
       },
     },
     {
