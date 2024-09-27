@@ -16,6 +16,7 @@ export class AuthController {
         password: user.password,
       },
     });
+    console.log("user in check: ", found);
     if (!found) {
       throw generateHttpError(401, "Invalid credentials, please try again");
     }
@@ -34,15 +35,14 @@ export class AuthController {
   }
 
   static issueToken(user) {
-    // delete user.dataValues.updatedAt;
-    // genera un token JWT con l'id e il nome utente
+    console.log("User in issueToken: ", user.profileImage);
     const createdToken = Jwt.sign(
       {
         user: {
           id: user.id,
           username: user.userName,
-          registrationDate: user.registrationDate,
-          profileImage: user.profileImage,
+          // registrationDate: user.registrationDate,
+          // profileImage: user.profileImage,
         },
       },
       process.env.TOKEN_SECRET,

@@ -13,7 +13,7 @@ export class VoteController {
       let newVote = Vote.build(voteData);
       newVote.userId = userId;
       newVote.ideaId = +ideaId;
-      newVote.voteType = voteData.type;
+      newVote.voteType = voteData.voteType;
       return newVote.save();
     } else throw generateHttpError(400, "You can have at most one vote for this idea");
   }

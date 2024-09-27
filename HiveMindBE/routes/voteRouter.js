@@ -26,7 +26,7 @@ voteRouter.get("/ideas/:ideaId/votes", ensureIdeaExists, (req, res, next) => {
     });
 });
 
-voteRouter.delete("/votes/:voteId", ensureUsersModifyOnlyOwnVotes, (req, res, next) => {
+voteRouter.delete("/ideas/votes/:voteId", ensureUsersModifyOnlyOwnVotes, (req, res, next) => {
   VoteController.delete(req.params.voteId)
     .then((item) => {
       res.json(item);
@@ -36,7 +36,7 @@ voteRouter.delete("/votes/:voteId", ensureUsersModifyOnlyOwnVotes, (req, res, ne
     });
 });
 
-voteRouter.put("/votes/:voteId", ensureUsersModifyOnlyOwnVotes, (req, res, next) => {
+voteRouter.put("/ideas/votes/:voteId", ensureUsersModifyOnlyOwnVotes, (req, res, next) => {
   VoteController.updateVote(req.body, req.params.voteId)
     .then((result) => {
       res.json(result);

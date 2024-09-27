@@ -6,25 +6,19 @@ export class UserController {
     const user = await User.findByPk(userId);
 
     const profileImage = convertFileToBLOB(profileImageFile);
-
+    console.log("profileImage:", profileImage);
     user.profileImage = profileImage;
-    const savedUser = await user.save();
 
-    const buffer = Buffer.from(await savedUser.profileImage.arrayBuffer());
-    savedUser.profileImage = buffer.toString("base64");
+    const buffer = Buffer.from(await user.profileImage.arrayBuffer());
+    user.profileImage = buffer.toString("base64");
+
+    const savedUser = await user.save();
 
     return savedUser;
   }
 
   static async findById(ideaId) {
-    const user = await User.findByPk(ideaId, {
-      attributes: { exclude: ["password"] },
-    });
-
-    if (user.profileImage) {
-      user.profileImage = user.profileImage.toString("base64");
-      console.log(user.profileImage);
-    }
+    const user = await User.findByPk(ideaId);
 
     return user;
   }

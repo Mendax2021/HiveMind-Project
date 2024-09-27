@@ -83,6 +83,18 @@ export class IdeaController {
       default:
         return [];
     }
+
+    // Calcolo del numero totale di idee che soddisfano i criteri di ricerca
+    const totalIdeas = await Idea.count({
+      where: { creationDate: { [Op.gte]: oneWeekAgo }, ...(userId ? { userId } : {}) },
+      include: [
+        {
+          model: Vote,
+          attributes: [], // escludiamo i voti dal conteggio
+        },
+      ],
+    });
+
     const ideas = await Idea.findAll({
       attributes: [
         "id",
@@ -101,8 +113,8 @@ export class IdeaController {
             attributes: ["userName"],
           },
         },
-        { model: User, attributes: ["userName", "id"] },
-        { model: Vote, attributes: [] },
+        { model: User, attributes: ["userName", "id", "profileImage"] },
+        { model: Vote, attributes: ["id", "userId", "voteType"] },
       ],
       group: ["Idea.id", "Comments.id", "Comments.User.id", "User.id"],
       //tramite lo spread operator espando l`oggetto contenente lo userId se è presente
@@ -114,10 +126,13 @@ export class IdeaController {
       subQuery: false, // necessario per rendere più efficiente la query ed evitare errori con il group by
     });
 
+    const totalPages = Math.ceil(totalIdeas / limit);
+
     return {
       content: ideas,
       page,
       limit,
+      totalPages,
     };
   }
 }

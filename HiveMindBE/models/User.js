@@ -29,7 +29,7 @@ export function createModel(database) {
         defaultValue: DataTypes.NOW,
       },
       profileImage: {
-        type: DataTypes.BLOB,
+        type: DataTypes.STRING,
         allowNull: true,
       },
     },

@@ -1,5 +1,5 @@
 import express from "express";
-import { UserController } from "../controllers/userController.js";
+import { UserController } from "../controllers/UserController.js";
 import { ensureUsersModifyOnlyOwnProfileImage } from "../middleware/authorization.js";
 
 export const userRouter = express.Router();

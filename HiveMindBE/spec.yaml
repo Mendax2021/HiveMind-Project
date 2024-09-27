@@ -151,6 +151,12 @@ paths:
           required: false
           schema:
             type: integer
+        - name: page
+          in: query
+          description: Numero di pagina da recuperare
+          required: true
+          schema:
+            type: integer
       description: >
         Recupero delle idee presenti nel sistema a seconda della tipologia
       responses:
@@ -280,9 +286,9 @@ paths:
             schema:
               type: object
               required:
-                - type
+                - voteType
               properties:
-                type:
+                voteType:
                   type: number
                   example: 1
       responses:
@@ -291,7 +297,7 @@ paths:
         401:
           description: Voto non creato
 
-  /votes/{voteId}:
+  /ideas/votes/{voteId}:
     delete:
       tags:
         - Vote

@@ -7,6 +7,7 @@ authenticationRouter.post("/auth/signin", (req, res, next) => {
   //oggetto contente username e password
   AuthController.checkCredentials(req.body)
     .then((userFound) => {
+      console.log("user:", userFound);
       if (userFound) {
         res.json(AuthController.issueToken(userFound));
       }
