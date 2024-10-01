@@ -336,9 +336,9 @@ paths:
             schema:
               type: object
               required:
-                - type
+                - voteType
               properties:
-                type:
+                voteType:
                   type: number
                   example: 1
       responses:

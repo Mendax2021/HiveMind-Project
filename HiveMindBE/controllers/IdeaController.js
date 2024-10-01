@@ -46,8 +46,14 @@ export class IdeaController {
     const offset = (page - 1) * limit;
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    console.log(userId);
-    let order, having;
+    let order, whereClause;
+
+    //tramite lo spread operator espando l`oggetto contenente lo userId se è presente
+    whereClause = {
+      creationDate: { [Op.gte]: oneWeekAgo },
+      ...(userId ? { userId } : {}),
+    };
+
     // switch per determinare l'ordinamento delle idee
     switch (type) {
       case "unpopular":
@@ -65,35 +71,15 @@ export class IdeaController {
         break;
 
       case "controversial":
-        order = [["totalVotes", "DESC"]];
-        /**
-         * soglia del 20% di controversia tra upvotes e downvotes così da esser
-         * proporzionato in base al numero di voti totali
-         */
-        const controversyThreshold = 0.2;
-        //Il valore assoluto tra upvotes e downvotes diviso per il numero totale di voti deve essere minore o uguale alla soglia
-        having = Sequelize.and(
-          Sequelize.where(Sequelize.literal("ABS(upvotes - downvotes) / totalVotes"), {
-            [Op.lte]: controversyThreshold,
-          }),
-          Sequelize.where(Sequelize.literal("totalVotes"), { [Op.gt]: 0 }) // evita divisione per 0 in caso di nessun voto
-        );
+        order = [
+          [Sequelize.literal("totalvotes"), "DESC"],
+          [Sequelize.literal("ABS(upvotes - downvotes)"), "ASC"],
+        ];
         break;
 
       default:
         return [];
     }
-
-    // Calcolo del numero totale di idee che soddisfano i criteri di ricerca
-    const totalIdeas = await Idea.count({
-      where: { creationDate: { [Op.gte]: oneWeekAgo }, ...(userId ? { userId } : {}) },
-      include: [
-        {
-          model: Vote,
-          attributes: [], // escludiamo i voti dal conteggio
-        },
-      ],
-    });
 
     const ideas = await Idea.findAll({
       attributes: [
@@ -101,7 +87,7 @@ export class IdeaController {
         "title",
         "description",
         "creationDate",
-        [Sequelize.literal(`SUM(CASE WHEN Votes.voteType = 1 THEN 1 ELSE 0 END)`), "upvotes"],
+        [Sequelize.literal(`SUM(CASE WHEN Votes.voteType = 1 THEN 1 ELSE 0 END)`), "upvotes"], //assegnazione dell`alias alla somma
         [Sequelize.literal(`SUM(CASE WHEN Votes.voteType = -1 THEN 1 ELSE 0 END)`), "downvotes"],
         [Sequelize.literal(`COUNT(Votes.id)`), "totalVotes"],
       ],
@@ -117,13 +103,61 @@ export class IdeaController {
         { model: Vote, attributes: ["id", "userId", "voteType"] },
       ],
       group: ["Idea.id", "Comments.id", "Comments.User.id", "User.id"],
-      //tramite lo spread operator espando l`oggetto contenente lo userId se è presente
-      where: { creationDate: { [Op.gte]: oneWeekAgo }, ...(userId ? { userId } : {}) },
-      having, // filtro per la controversia
+      where: whereClause,
       order,
       limit,
       offset,
       subQuery: false, // necessario per rendere più efficiente la query ed evitare errori con il group by
+    });
+
+    // Se non ci sono idee che soddisfano i criteri di controversia, esegui una query di fallback
+    if (ideas.length === 0 && type === "controversial") {
+      const fallbackIdeas = await Idea.findAll({
+        attributes: [
+          "id",
+          "title",
+          "description",
+          "creationDate",
+          [Sequelize.literal(`SUM(CASE WHEN Votes.voteType = 1 THEN 1 ELSE 0 END)`), "upvotes"],
+          [Sequelize.literal(`SUM(CASE WHEN Votes.voteType = -1 THEN 1 ELSE 0 END)`), "downvotes"],
+          [Sequelize.literal(`COUNT(Votes.id)`), "totalVotes"],
+        ],
+        include: [
+          {
+            model: Comment,
+            include: {
+              model: User,
+              attributes: ["userName"],
+            },
+          },
+          { model: User, attributes: ["userName", "id", "profileImage"] },
+          { model: Vote, attributes: ["id", "userId", "voteType"] },
+        ],
+        group: ["Idea.id", "Comments.id", "Comments.User.id", "User.id"],
+        where: whereClause,
+        order: [["creationDate", "DESC"]], // Ordina per data di creazione come fallback
+        limit,
+        offset,
+        subQuery: false,
+      });
+
+      return {
+        content: fallbackIdeas,
+        page,
+        limit,
+        totalPages: Math.ceil(fallbackIdeas.length / limit),
+      };
+    }
+
+    // Calcolo del numero totale di idee che soddisfano i criteri di ricerca
+    const totalIdeas = await Idea.count({
+      where: { creationDate: { [Op.gte]: oneWeekAgo }, ...(userId ? { userId } : {}) },
+      include: [
+        {
+          model: Vote,
+          attributes: [], // escludiamo i voti dal conteggio
+        },
+      ],
     });
 
     const totalPages = Math.ceil(totalIdeas / limit);

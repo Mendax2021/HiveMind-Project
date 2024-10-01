@@ -25,7 +25,9 @@ export class VoteController {
       },
     });
     if (existingVote) {
-      existingVote.voteType = modifiedVote.type;
+      console.log("existingVote", existingVote);
+      console.log("modifiedVote", modifiedVote);
+      existingVote.voteType = modifiedVote.voteType;
       return existingVote.save();
     } else throw generateHttpError(400, "You haven't voted on this idea yet");
   }
