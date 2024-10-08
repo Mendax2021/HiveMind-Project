@@ -48,7 +48,7 @@ export class IdeaController {
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
     let order, whereClause;
 
-    //tramite lo spread operator espando l`oggetto contenente lo userId se è presente
+    // tramite lo spread operator espando l`oggetto contenente lo userId se è presente
     whereClause = {
       creationDate: { [Op.gte]: oneWeekAgo },
       ...(userId ? { userId } : {}),
@@ -80,7 +80,11 @@ export class IdeaController {
       default:
         return [];
     }
-
+    /**
+     * per evitare che ci siano errori con la join tra idee e commenti,
+     * eseguo una query per ottenere solo le idee e successivamente una query
+     * per ottenere i commenti che mappo alle idee
+     */
     const ideas = await Idea.findAll({
       attributes: [
         "id",
@@ -92,26 +96,37 @@ export class IdeaController {
         [Sequelize.literal(`COUNT(Votes.id)`), "totalVotes"],
       ],
       include: [
-        {
-          model: Comment,
-          include: {
-            model: User,
-            attributes: ["userName"],
-          },
-        },
         { model: User, attributes: ["userName", "id", "profileImage"] },
         { model: Vote, attributes: ["id", "userId", "voteType"] },
       ],
-      group: ["Idea.id", "Comments.id", "Comments.User.id", "User.id"],
       where: whereClause,
+      group: ["Idea.id", "User.id"],
       order,
       limit,
       offset,
-      subQuery: false, // necessario per rendere più efficiente la query ed evitare errori con il group by
+      subQuery: false,
     });
 
-    // Se non ci sono idee che soddisfano i criteri di controversia, esegui una query di fallback
-    if (ideas.length === 0 && type === "controversial") {
+    const ideaIds = ideas.map((idea) => idea.id);
+    const comments = await Comment.findAll({
+      where: { ideaId: { [Op.in]: ideaIds } },
+      include: {
+        model: User,
+        attributes: ["userName", "profileImage"],
+      },
+    });
+
+    // mappo i commenti alle idee corrispondenti
+    const ideasWithComments = ideas.map((idea) => {
+      const ideaComments = comments.filter((comment) => comment.ideaId === idea.id);
+      return {
+        ...idea.toJSON(), //rimuovo i metadati aggiunti da sequelize
+        Comments: ideaComments,
+      };
+    });
+
+    // se non ci sono idee che soddisfano i criteri di controversia, esegui una query di fallback
+    if (ideasWithComments.length === 0 && type === "controversial") {
       const fallbackIdeas = await Idea.findAll({
         attributes: [
           "id",
@@ -123,19 +138,12 @@ export class IdeaController {
           [Sequelize.literal(`COUNT(Votes.id)`), "totalVotes"],
         ],
         include: [
-          {
-            model: Comment,
-            include: {
-              model: User,
-              attributes: ["userName"],
-            },
-          },
           { model: User, attributes: ["userName", "id", "profileImage"] },
           { model: Vote, attributes: ["id", "userId", "voteType"] },
         ],
-        group: ["Idea.id", "Comments.id", "Comments.User.id", "User.id"],
         where: whereClause,
-        order: [["creationDate", "DESC"]], // Ordina per data di creazione come fallback
+        group: ["Idea.id", "User.id"],
+        order: [["creationDate", "DESC"]],
         limit,
         offset,
         subQuery: false,
@@ -146,16 +154,16 @@ export class IdeaController {
         page,
         limit,
         totalPages: Math.ceil(fallbackIdeas.length / limit),
+        type,
       };
     }
-
-    // Calcolo del numero totale di idee che soddisfano i criteri di ricerca
+    // calcolo del numero totale di idee che soddisfano i criteri di ricerca
     const totalIdeas = await Idea.count({
       where: { creationDate: { [Op.gte]: oneWeekAgo }, ...(userId ? { userId } : {}) },
       include: [
         {
           model: Vote,
-          attributes: [], // escludiamo i voti dal conteggio
+          attributes: [],
         },
       ],
     });
@@ -163,10 +171,11 @@ export class IdeaController {
     const totalPages = Math.ceil(totalIdeas / limit);
 
     return {
-      content: ideas,
+      content: ideasWithComments,
       page,
       limit,
       totalPages,
+      type,
     };
   }
 }

@@ -22,7 +22,7 @@ export class CommentController {
     const timeDifference = (currentTime - creationTime) / (1000 * 60);
 
     if (timeDifference > threshold) {
-      throw generateHttpError(400, `Cannot modify idea after ${threshold} minutes of creation`);
+      throw generateHttpError(400, `Cannot modify comment after ${threshold} minutes of creation`);
     }
 
     idea.set(updatedComment);
