@@ -173,7 +173,7 @@ export default function IdeasContainer(props: { isUserProfile?: boolean }) {
       .then((response) => {
         setIdeasPaginationData((prevState) => {
           const newIdeas =
-            prevState.content.length > 0
+            prevState.content.length > 0 && prevState.type === searchFilterType
               ? response.data.content.filter((newIdea) => !prevState.content.some((idea) => idea.id === newIdea.id))
               : response.data.content;
           const updatedData = {
@@ -204,7 +204,7 @@ export default function IdeasContainer(props: { isUserProfile?: boolean }) {
     <div className=" flex flex-col gap-10 items-center py-5 md:p-5 min-h-screen">
       <div className="hidden lg:block w-full">{!props.isUserProfile && <IdeaCreationForm addIdea={addIdea} />}</div>
       {ideasPaginationData.content.length === 0 && !loading && <p>Non ci sono idee da visualizzare</p>}
-      {ideasPaginationData.content.length > 1 &&
+      {ideasPaginationData.content.length > 0 &&
         ideasPaginationData?.content.map((idea, index) => (
           <IdeaCard
             idea={idea}
