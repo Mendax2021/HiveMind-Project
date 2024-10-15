@@ -1,4 +1,5 @@
 import { createContext } from "react";
-import { User } from "../models/User.model";
 
-export const UserContext = createContext<User | null>(null);
+import { UserContextData } from "../models/UserContextData.model";
+
+export const UserContext = createContext<UserContextData | null>(null);

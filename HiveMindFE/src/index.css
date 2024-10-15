@@ -11,15 +11,39 @@
 }
 
 .border-t-5c5c5c {
-  border-bottom-color: #5c5c5c;
+  border-top-color: #5c5c5c;
 }
 
 .border-l-5c5c5c {
   border-left-color: #5c5c5c;
 }
 
+.border-t-r-5c5c5c {
+  border-top-color: #5c5c5c;
+  border-right-color: #5c5c5c;
+}
+
 .border-5c5c5c {
   border: 1px solid #5c5c5c;
+}
+
+.border-t-r-5c5c5c {
+  border-top-color: #5c5c5c;
+  border-right-color: #5c5c5c;
+}
+.border-b-r-5c5c5c {
+  border-bottom-color: #5c5c5c;
+  border-right-color: #5c5c5c;
+}
+
+.border-b-t-5c5c5c {
+  border-bottom-color: #5c5c5c;
+  border-top-color: #5c5c5c;
+}
+
+.border-l-r-5c5c5c {
+  border-left-color: #5c5c5c;
+  border-right-color: #5c5c5c;
 }
 
 .toaster-animation {

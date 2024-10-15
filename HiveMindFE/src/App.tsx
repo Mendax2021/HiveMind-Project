@@ -4,6 +4,7 @@ import { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
 import { logOut } from "./shared/utils/auth.utils";
 import { jwtDecode } from "jwt-decode";
+import { logOutInterceptor } from "./axios/Interceptors";
 
 function App() {
   //passo il navigator per i Link al nextuiProvider
@@ -21,8 +22,12 @@ function App() {
     }
   }, []);
 
+  useEffect(() => {
+    logOutInterceptor(navigate);
+  }, []);
+
   return (
-    <main className="w-full min-h-screen dark text-foreground bg-background relative">
+    <main className="w-full h-full dark text-foreground bg-background relative">
       <NextUIProvider navigate={navigate}>
         <Toaster />
         <Outlet />

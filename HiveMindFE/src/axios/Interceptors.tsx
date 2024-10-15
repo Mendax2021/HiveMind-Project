@@ -31,3 +31,28 @@ API.interceptors.response.use(
     return Promise.reject(formattedError);
   }
 );
+
+//interceptor per aggiungere il token alle richieste
+API.interceptors.request.use((req) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    req.headers["Authorization"] = `Bearer ${token}`;
+  }
+  return req;
+});
+
+//interceptor per sloggare l`utente se il token è scaduto
+export function logOutInterceptor(navigateFn: (path: string) => void) {
+  API.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+    (error) => {
+      if (error.status === 401) {
+        localStorage.removeItem("token");
+        navigateFn("/signIn");
+      }
+      return Promise.reject(error);
+    }
+  );
+}

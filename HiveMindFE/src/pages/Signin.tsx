@@ -4,14 +4,13 @@ import { ChangeEvent, FormEvent, useCallback, useState } from "react";
 import { SignInData } from "../shared/models/SignInData.model";
 import { AuthRequest } from "../shared/models/AuthRequest.model";
 import { signIn } from "../services/AuthService";
-import { useNavigate } from "react-router-dom";
 
 export default function SignIn() {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [signInData, setSignInData] = useState<SignInData>({
     usr: {
       value: "",
-      isDirty: false,
+      isDirty: false, //utile a verificare se il campo è stato toccato o meno
       validateCriteria: (value: string) => {
         const regex = /^[^a-zA-Z0-9]*$/;
         if (value.length === 0) return "Il campo Username non può essere vuoto";
@@ -34,6 +33,7 @@ export default function SignIn() {
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const updatedFormData: SignInData = { ...signInData };
+      //cast necessario in qunato event.target.id è di tipo string e TS non lo riconosce come chiave di SignInData ( quando invece lo è)
       const changedIdInput = event.target.id as keyof SignInData;
       updatedFormData[changedIdInput].value = event.target.value;
       if (!updatedFormData[changedIdInput].isDirty) updatedFormData[changedIdInput].isDirty = true;
@@ -51,10 +51,9 @@ export default function SignIn() {
         pwd: signInData.pwd.value,
       };
       signIn(authRequest).then((response) => {
-        console.log(response.data.token);
-        console.log(response.data);
         localStorage.setItem("token", response.data.token);
-        navigate("/home");
+        //aggiungo evento per permettere il rerender della pagina al cambiare del local storage
+        window.dispatchEvent(new Event("storage"));
       });
     },
     [signInData]
@@ -65,8 +64,6 @@ export default function SignIn() {
     updatedFormData.usr.value = "";
     setSignInData(updatedFormData);
   }, [signInData]);
-
-  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col justify-center min-h-screen items-center space-y-4">

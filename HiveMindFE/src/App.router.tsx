@@ -1,15 +1,17 @@
-import { createBrowserRouter } from "react-router-dom";
-import Home from "./pages/Home.tsx";
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import AppContainer from "./pages/AppContainer.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import App from "./App.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import AuthGuard from "./shared/components/AuthGuard/AuthGuard.tsx";
+import Home from "./pages/Home.tsx";
+import ProfilePage from "./pages/ProfilePage.tsx";
 
 //const HomePage = LazyLoad(lazy(() => import("./App"))); come fare per importare componenti lazy
 
 export const router = createBrowserRouter([
   {
-    path: "",
+    path: "/",
     element: <App />,
     /*
     Per fare in modo che io possa utilizzare l`hook useNavigate di reactRouterDom per passare il suo valore
@@ -18,12 +20,26 @@ export const router = createBrowserRouter([
     */
     children: [
       {
-        path: "/home",
+        path: "",
         element: (
           <AuthGuard isProtected>
-            <Home />
+            <AppContainer />
           </AuthGuard>
         ),
+        children: [
+          {
+            path: "/",
+            element: <Navigate to="/home" replace />,
+          },
+          {
+            path: "/home",
+            element: <Home />,
+          },
+          {
+            path: "/profile/:userId",
+            element: <ProfilePage />,
+          },
+        ],
       },
       {
         path: "/signIn",

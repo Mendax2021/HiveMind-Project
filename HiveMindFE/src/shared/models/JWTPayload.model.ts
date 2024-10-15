@@ -1,8 +1,7 @@
+import { User } from "./User.model";
+
 export interface JWTPayload {
-  user: {
-    id: number;
-    username: string;
-  };
+  user: User;
   iat: number;
   exp: number;
 }

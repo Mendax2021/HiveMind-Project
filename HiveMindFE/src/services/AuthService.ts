@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import { AuthRequest } from "../shared/models/AuthRequest.model";
 import { endpoints } from "../shared/constants/api";
 import { User } from "../shared/models/User.model";
-import { API } from "../axios/ApiErrorInterceptor";
+import { API } from "../axios/Interceptors";
 import { AuthResponse } from "../shared/models/AuthResponse.model";
 
 export function signUp(authRequest: AuthRequest): Promise<AxiosResponse<User>> {
