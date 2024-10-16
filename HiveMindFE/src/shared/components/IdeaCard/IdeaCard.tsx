@@ -111,7 +111,7 @@ export default function IdeaCard(props: {
               size="md"
               color="secondary"
               src={
-                props.isUserProfile && userContext && userContext.user
+                props.isUserProfile && userContext && userContext.user?.profileImage
                   ? convertBase64ToFile(userContext.user.profileImage, "profileImage")
                   : props.idea.User.profileImage
                   ? convertBase64ToFile(props.idea.User.profileImage, "profileImage")
