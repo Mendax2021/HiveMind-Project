@@ -116,6 +116,10 @@ export class IdeaController {
       },
     });
 
+    const votes = await Vote.findAll({
+      where: { ideaId: { [Op.in]: ideaIds } },
+    });
+
     // mappo i commenti alle idee corrispondenti
     const ideasWithComments = ideas.map((idea) => {
       const ideaComments = comments.filter((comment) => comment.ideaId === idea.id);
@@ -125,8 +129,16 @@ export class IdeaController {
       };
     });
 
+    const ideaWithVotes = ideasWithComments.map((idea) => {
+      const ideaVotes = votes.filter((vote) => vote.ideaId === idea.id);
+      return {
+        ...idea,
+        Votes: ideaVotes,
+      };
+    });
+
     // se non ci sono idee che soddisfano i criteri di controversia, esegui una query di fallback
-    if (ideasWithComments.length === 0 && type === "controversial") {
+    if (ideaWithVotes.length === 0 && type === "controversial") {
       const fallbackIdeas = await Idea.findAll({
         attributes: [
           "id",
@@ -171,7 +183,7 @@ export class IdeaController {
     const totalPages = Math.ceil(totalIdeas / limit);
 
     return {
-      content: ideasWithComments,
+      content: ideaWithVotes,
       page,
       limit,
       totalPages,
