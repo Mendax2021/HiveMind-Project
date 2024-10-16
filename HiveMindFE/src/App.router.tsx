@@ -1,13 +1,11 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import AppContainer from "./pages/AppContainer.tsx";
-import SignIn from "./pages/SignIn.tsx";
+import SignIn from "./pages/Signin.tsx";
 import App from "./App.tsx";
-import SignUp from "./pages/SignUp.tsx";
+import SignUp from "./pages/Signup.tsx";
 import AuthGuard from "./shared/components/AuthGuard/AuthGuard.tsx";
 import Home from "./pages/Home.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
-
-//const HomePage = LazyLoad(lazy(() => import("./App"))); come fare per importare componenti lazy
 
 export const router = createBrowserRouter([
   {

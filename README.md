@@ -56,9 +56,9 @@ TOKEN_SECRET = "H1V3M1ND_S3CR37_T0K3N"
 
 #### 2.2. Modifica delle variabili d'ambiente
 
-- **DB_CONNECTION_URI**: Questo è il percorso del database. Nell'esempio è configurato per usare un database SQLite (`hiveMindDB.db`). Puoi cambiarlo se vuoi utilizzare un altro tipo di database.
+- **DB_CONNECTION_URI**: Questo è il percorso del database. Nell'esempio è configurato per usare un database SQLite (`hiveMindDB.db`). Puoi cambiarlo se vuoi utilizzare un altro tipo di database o se necessiti di utilizzare un`altro path.
 - **DIALECT**: Indica il tipo di database che stai utilizzando. In questo caso, è impostato su `sqlite`, ma puoi modificarlo in base al tipo di database che desideri utilizzare (es. `postgres`, `mysql`, `mariadb`).
-- **TOKEN_SECRET**: Questo è il segreto utilizzato per la firma dei token JWT. Puoi personalizzarlo.
+- **TOKEN_SECRET**: Questa è la chiave segreta utilizzata per la firma dei token JWT. Puoi personalizzarla.
 
 ## Configurazione del database con Sequelize
 
