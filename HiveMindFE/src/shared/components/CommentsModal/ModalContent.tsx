@@ -1,4 +1,4 @@
-import { Avatar, Button, Input } from "@nextui-org/react";
+import { Avatar, Button, Input, Link } from "@nextui-org/react";
 import { convertBase64ToFile } from "../../utils/file.utils";
 import defaultImage from "../../../assets/defaultImage.png";
 import "../../../index.css";
@@ -10,6 +10,7 @@ import { addComment } from "../../../services/CommentService";
 import { Comment } from "../../models/Comment.model";
 import { UserContext } from "../../context/UserContext";
 import { IdeaModalContext } from "../../context/modalContentContext";
+import ReactMarkdown from "react-markdown";
 
 export default function ModalContent(props: { addComment: (comment: Comment, ideaId: number) => void }) {
   const [commentData, setCommentData] = useState<InputField<string>>({
@@ -64,7 +65,17 @@ export default function ModalContent(props: { addComment: (comment: Comment, ide
             <div className="flex flex-col  lg:w-[50%] lg:justify-center lg:border-r lg:border-r-5c5c5c ">
               <h2 className="text-xl font-bold">{ideaModalContext.idea.title}</h2>
               <div className="overflow-auto">
-                <p className="text-md font-light">{ideaModalContext.idea.description}</p>
+                <ReactMarkdown
+                  components={{
+                    a: ({ href, children }) => (
+                      <Link href={href} color="secondary" underline="always" target="_blank" rel="noopener noreferrer">
+                        {children}
+                      </Link>
+                    ),
+                  }}
+                >
+                  {ideaModalContext.idea.description}
+                </ReactMarkdown>
               </div>
             </div>
             <div className="flex flex-col lg:w-[50%] ">
@@ -109,6 +120,7 @@ export default function ModalContent(props: { addComment: (comment: Comment, ide
                         </div>
                         <p className="text-default-400 text-">{pastTimeCalc(comment.creationDate)}</p>
                       </div>
+
                       <p className="text-lg">{comment.content}</p>
                     </div>
                   </div>
@@ -167,7 +179,17 @@ export default function ModalContent(props: { addComment: (comment: Comment, ide
             <div className="flex flex-col border-b border-b-5c5c5c p-5">
               <h2 className="text-xl font-bold">{ideaModalContext.idea.title}</h2>
               <div className="overflow-auto">
-                <p className="text-md font-light">{ideaModalContext.idea.description}</p>
+                <ReactMarkdown
+                  components={{
+                    a: ({ href, children }) => (
+                      <Link href={href} color="secondary" underline="always" target="_blank" rel="noopener noreferrer">
+                        {children}
+                      </Link>
+                    ),
+                  }}
+                >
+                  {ideaModalContext.idea.description}
+                </ReactMarkdown>
               </div>
             </div>
             <div className="flex flex-col gap-2 p-2 h-full overflow-y-auto ">
