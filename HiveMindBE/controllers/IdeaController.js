@@ -170,6 +170,7 @@ export class IdeaController {
       };
     }
     // calcolo del numero totale di idee che soddisfano i criteri di ricerca
+    // tramite lo spread operator espando l`oggetto contenente lo userId se è presente
     const totalIdeas = await Idea.count({
       where: { creationDate: { [Op.gte]: oneWeekAgo }, ...(userId ? { userId } : {}) },
       include: [
